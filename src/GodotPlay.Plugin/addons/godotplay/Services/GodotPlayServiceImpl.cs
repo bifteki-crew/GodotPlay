@@ -25,26 +25,31 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
 
     public override Task<SceneTreeResponse> GetSceneTree(Empty request, ServerCallContext context)
     {
-        return Task.FromResult(_server.Inspector.GetSceneTree());
+        var result = _server.RunOnMainThread(() => _server.Inspector.GetSceneTree());
+        return Task.FromResult(result);
     }
 
     public override Task<NodeList> FindNodes(NodeQuery request, ServerCallContext context)
     {
-        return Task.FromResult(_server.Inspector.FindNodes(request));
+        var result = _server.RunOnMainThread(() => _server.Inspector.FindNodes(request));
+        return Task.FromResult(result);
     }
 
     public override Task<PropertyMap> GetNodeProperties(NodeRef request, ServerCallContext context)
     {
-        return Task.FromResult(_server.Inspector.GetNodeProperties(request));
+        var result = _server.RunOnMainThread(() => _server.Inspector.GetNodeProperties(request));
+        return Task.FromResult(result);
     }
 
     public override Task<ActionResult> Click(NodeRef request, ServerCallContext context)
     {
-        return Task.FromResult(_server.InputSimulator.Click(request));
+        var result = _server.RunOnMainThread(() => _server.InputSimulator.Click(request));
+        return Task.FromResult(result);
     }
 
     public override Task<ScreenshotResponse> TakeScreenshot(ScreenshotRequest request, ServerCallContext context)
     {
-        return Task.FromResult(_server.ScreenshotCapture.Capture(request));
+        var result = _server.RunOnMainThread(() => _server.ScreenshotCapture.Capture(request));
+        return Task.FromResult(result);
     }
 }

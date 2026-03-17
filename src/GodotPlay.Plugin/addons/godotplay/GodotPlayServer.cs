@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Godot;
 using Grpc.Core;
 using GodotPlay.Plugin.Services;
@@ -13,6 +14,8 @@ public partial class GodotPlayServer : Node
     private InputSimulator? _inputSimulator;
     private ScreenshotCapture? _screenshotCapture;
 
+    private readonly ConcurrentQueue<MainThreadWork> _workQueue = new();
+
     public SceneTreeInspector Inspector => _inspector!;
     public InputSimulator InputSimulator => _inputSimulator!;
     public ScreenshotCapture ScreenshotCapture => _screenshotCapture!;
@@ -24,6 +27,38 @@ public partial class GodotPlayServer : Node
         _screenshotCapture = new ScreenshotCapture(GetTree());
 
         StartServer();
+    }
+
+    public override void _Process(double delta)
+    {
+        // Process all pending main-thread work
+        while (_workQueue.TryDequeue(out var work))
+        {
+            try
+            {
+                work.Result = work.Action();
+                work.Completed.Set();
+            }
+            catch (Exception ex)
+            {
+                work.Exception = ex;
+                work.Completed.Set();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Execute a function on the main thread and wait for the result.
+    /// Call this from gRPC background threads.
+    /// </summary>
+    public T RunOnMainThread<T>(Func<T> action)
+    {
+        var work = new MainThreadWork { Action = () => action()! };
+        _workQueue.Enqueue(work);
+        work.Completed.Wait();
+        if (work.Exception != null)
+            throw work.Exception;
+        return (T)work.Result!;
     }
 
     private void StartServer()
@@ -52,5 +87,13 @@ public partial class GodotPlayServer : Node
     public void QuitGame()
     {
         GetTree().Quit();
+    }
+
+    private class MainThreadWork
+    {
+        public required Func<object> Action;
+        public object? Result;
+        public Exception? Exception;
+        public ManualResetEventSlim Completed = new(false);
     }
 }
