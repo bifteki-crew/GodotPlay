@@ -15,7 +15,3 @@ GodotPlayServer="*res://addons/godotplay/GodotPlayServer.cs"
 [dotnet]
 
 project/assembly_name="GodotPlayDemo"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/godotplay/plugin.cfg")

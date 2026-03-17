@@ -24,7 +24,16 @@ public class GodotPlaySession : IGodotPlaySession
         TimeSpan? timeout = null,
         CancellationToken ct = default)
     {
-        var channel = GrpcChannel.ForAddress(address);
+        var channel = GrpcChannel.ForAddress(address, new GrpcChannelOptions
+        {
+            HttpHandler = new SocketsHttpHandler
+            {
+                EnableMultipleHttp2Connections = true,
+                // Allow HTTP/2 without TLS (h2c)
+            }
+        });
+        // Enable HTTP/2 unencrypted support
+        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
         var session = new GodotPlaySession(channel);
 
         var deadline = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(10));
@@ -36,7 +45,7 @@ public class GodotPlaySession : IGodotPlaySession
                 if (ping.Ready)
                     return session;
             }
-            catch (Grpc.Core.RpcException)
+            catch (Exception) when (!ct.IsCancellationRequested)
             {
                 await Task.Delay(200, ct);
             }

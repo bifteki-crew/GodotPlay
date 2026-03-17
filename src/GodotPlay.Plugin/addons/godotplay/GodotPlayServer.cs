@@ -1,7 +1,5 @@
 using Godot;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.DependencyInjection;
+using Grpc.Core;
 using GodotPlay.Plugin.Services;
 
 namespace GodotPlay.Plugin;
@@ -10,8 +8,7 @@ public partial class GodotPlayServer : Node
 {
     [Export] public int Port { get; set; } = 50051;
 
-    private WebApplication? _app;
-    private Task? _serverTask;
+    private Server? _grpcServer;
     private SceneTreeInspector? _inspector;
     private InputSimulator? _inputSimulator;
     private ScreenshotCapture? _screenshotCapture;
@@ -31,35 +28,27 @@ public partial class GodotPlayServer : Node
 
     private void StartServer()
     {
-        var builder = WebApplication.CreateBuilder();
-        builder.WebHost.ConfigureKestrel(k =>
+        var serviceImpl = new GodotPlayServiceImpl(this);
+
+        _grpcServer = new Server
         {
-            k.ListenLocalhost(Port, o => o.Protocols = HttpProtocols.Http2);
-        });
-        builder.Services.AddGrpc();
-        builder.Services.AddSingleton(this);
+            Services = { GodotPlay.Protocol.GodotPlayService.BindService(serviceImpl) },
+            Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+        };
 
-        _app = builder.Build();
-        _app.MapGrpcService<GodotPlayServiceImpl>();
-
-        _serverTask = Task.Run(async () =>
-        {
-            await _app.RunAsync();
-        });
-
+        _grpcServer.Start();
         GD.Print($"[GodotPlay] gRPC server listening on http://localhost:{Port}");
     }
 
     public override void _ExitTree()
     {
-        if (_app != null)
+        if (_grpcServer != null)
         {
-            _app.StopAsync().Wait(TimeSpan.FromSeconds(5));
+            _grpcServer.ShutdownAsync().Wait(TimeSpan.FromSeconds(5));
             GD.Print("[GodotPlay] gRPC server stopped.");
         }
     }
 
-    // Called by gRPC service to quit
     public void QuitGame()
     {
         GetTree().Quit();

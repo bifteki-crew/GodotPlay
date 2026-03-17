@@ -8,6 +8,10 @@ obj/
 # Godot
 .godot/
 *.import
+*.uid
+
+# Test results
+TestResults/
 
 # Node
 node_modules/

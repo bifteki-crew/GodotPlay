@@ -14,11 +14,11 @@ public class EndToEndTests
     {
         _session = await GodotPlayLauncher.LaunchAsync(new LaunchOptions
         {
-            ProjectPath = Path.GetFullPath("../../../../demo"),
+            ProjectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "demo")),
             Headless = false,
             Scene = "res://scenes/main_menu.tscn",
             Port = 50051,
-            GodotPath = "godot",
+            GodotPath = Environment.GetEnvironmentVariable("GODOT_PATH") ?? "godot",
             StartupTimeout = TimeSpan.FromSeconds(30)
         });
     }

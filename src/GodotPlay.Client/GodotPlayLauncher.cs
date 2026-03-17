@@ -15,10 +15,7 @@ public static class GodotPlayLauncher
             {
                 FileName = options.GodotPath,
                 Arguments = string.Join(" ", args),
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
+                UseShellExecute = false
             }
         };
 
