@@ -1,0 +1,21 @@
+; Engine configuration file.
+
+config_version=5
+
+[application]
+
+config/name="GodotPlay Demo"
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+run/main_scene="res://scenes/main_menu.tscn"
+
+[autoload]
+
+GodotPlayServer="*res://addons/godotplay/GodotPlayServer.cs"
+
+[dotnet]
+
+project/assembly_name="GodotPlayDemo"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godotplay/plugin.cfg")
