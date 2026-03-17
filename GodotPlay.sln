@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotPlay.Client", "src\God
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotPlay.Tests", "src\GodotPlay.Tests\GodotPlay.Tests.csproj", "{C9440808-ABAA-4545-9EA0-22BF9BF7AEBF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotPlay.Plugin", "src\GodotPlay.Plugin\GodotPlay.Plugin.csproj", "{006B6672-03AF-4246-915D-2382AAE88A91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,18 @@ Global
 		{C9440808-ABAA-4545-9EA0-22BF9BF7AEBF}.Release|x64.Build.0 = Release|Any CPU
 		{C9440808-ABAA-4545-9EA0-22BF9BF7AEBF}.Release|x86.ActiveCfg = Release|Any CPU
 		{C9440808-ABAA-4545-9EA0-22BF9BF7AEBF}.Release|x86.Build.0 = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|x64.Build.0 = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Debug|x86.Build.0 = Debug|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|x64.ActiveCfg = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|x64.Build.0 = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|x86.ActiveCfg = Release|Any CPU
+		{006B6672-03AF-4246-915D-2382AAE88A91}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +64,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{63E40225-EA1E-4CD4-8A34-224BA7434CC6} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{C9440808-ABAA-4545-9EA0-22BF9BF7AEBF} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{006B6672-03AF-4246-915D-2382AAE88A91} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
