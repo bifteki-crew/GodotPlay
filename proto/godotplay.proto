@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package godotplay;
+
+option csharp_namespace = "GodotPlay.Protocol";
+
+message Empty {}
+
+message PingResponse {
+  string version = 1;
+  bool ready = 2;
+}
+
+message NodeInfo {
+  string path = 1;
+  string class_name = 2;
+  string name = 3;
+  repeated NodeInfo children = 4;
+  map<string, string> properties = 5;
+}
+
+message SceneTreeResponse {
+  NodeInfo root = 1;
+  string current_scene_path = 2;
+}
+
+message NodeQuery {
+  string path = 1;
+  string class_name = 2;
+  string name_pattern = 3;
+  string group = 4;
+  map<string, string> property_filters = 5;
+}
+
+message NodeList {
+  repeated NodeInfo nodes = 1;
+}
+
+message NodeRef {
+  string path = 1;
+}
+
+message PropertyMap {
+  map<string, string> properties = 1;
+}
+
+message ActionResult {
+  bool success = 1;
+  string error = 2;
+}
+
+message ScreenshotRequest {
+  string node_path = 1;
+}
+
+message ScreenshotResponse {
+  bytes png_data = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+service GodotPlayService {
+  rpc Ping(Empty) returns (PingResponse);
+  rpc Shutdown(Empty) returns (Empty);
+  rpc GetSceneTree(Empty) returns (SceneTreeResponse);
+  rpc FindNodes(NodeQuery) returns (NodeList);
+  rpc GetNodeProperties(NodeRef) returns (PropertyMap);
+  rpc Click(NodeRef) returns (ActionResult);
+  rpc TakeScreenshot(ScreenshotRequest) returns (ScreenshotResponse);
+}
