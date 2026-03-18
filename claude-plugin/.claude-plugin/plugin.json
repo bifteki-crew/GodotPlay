@@ -1,0 +1,10 @@
+{
+  "name": "godotplay",
+  "description": "Playwright-like test automation for Godot 4.x — AI-powered game UI testing with MCP integration",
+  "version": "0.1.0",
+  "author": {
+    "name": "GodotPlay"
+  },
+  "license": "MIT",
+  "keywords": ["godot", "testing", "automation", "mcp", "game-testing", "ui-testing"]
+}

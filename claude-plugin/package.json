@@ -1,0 +1,6 @@
+{
+  "name": "godotplay",
+  "version": "0.1.0",
+  "description": "Claude Code plugin for GodotPlay test automation",
+  "type": "module"
+}
