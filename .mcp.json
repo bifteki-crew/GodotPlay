@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "godotplay": {
+      "command": "node",
+      "args": ["D:/ai/playgodot/src/godotplay-mcp/dist/index.js"]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "enableAllProjectMcpServers": true,
+  "extraKnownMarketplaces": {
+    "godotplay-local": {
+      "source": {
+        "source": "directory",
+        "path": "./claude-plugin"
+      }
+    }
+  },
+  "env": {
+    "GODOT_PATH": "D:/Tools/Godot_v4.6.1-stable_mono_win64/Godot_v4.6.1-stable_mono_win64_console.exe"
+  }
+}
