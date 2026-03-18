@@ -4,6 +4,13 @@
     <RootNamespace>GodotPlay</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>GodotPlay</PackageId>
+    <Version>0.2.0</Version>
+    <Authors>GodotPlay</Authors>
+    <Description>Playwright-like test automation client for Godot 4.x — NodeLocator, Expect assertions, visual regression</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>godot;testing;automation;playwright;grpc;game-testing</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>

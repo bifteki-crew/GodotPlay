@@ -11,9 +11,11 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["godot", "testing", "mcp", "automation", "game-testing"],
+  "author": "GodotPlay",
+  "license": "MIT",
+  "files": ["dist/", "README.md"],
+  "publishConfig": { "access": "public" },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.3",
     "@grpc/proto-loader": "^0.8.0",
