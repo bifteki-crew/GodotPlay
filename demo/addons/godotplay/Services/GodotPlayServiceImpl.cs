@@ -52,4 +52,53 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
         var result = _server.RunOnMainThread(() => _server.ScreenshotCapture.Capture(request));
         return Task.FromResult(result);
     }
+
+    public override Task<ActionResult> Type(TypeRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TextInput.Type(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> SetProperty(SetPropertyRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TextInput.SetProperty(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> LoadScene(LoadSceneRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TextInput.LoadScene(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<SceneInfo> GetCurrentScene(Empty request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TextInput.GetCurrentScene());
+        return Task.FromResult(result);
+    }
+
+    public override async Task<NodeRef> WaitForNode(WaitRequest request, ServerCallContext context)
+    {
+        return await _server.Waiter.WaitForNode(request, _server);
+    }
+
+    public override async Task<SignalData> WaitForSignal(SignalWaitRequest request, ServerCallContext context)
+    {
+        return await _server.Waiter.WaitForSignal(request, _server);
+    }
+
+    public override async Task SubscribeEvents(EventFilter request,
+        Grpc.Core.IServerStreamWriter<GameEvent> responseStream,
+        ServerCallContext context)
+    {
+        while (!context.CancellationToken.IsCancellationRequested)
+        {
+            while (_server.EventStreamer.TryDequeue(out var evt))
+            {
+                if (evt != null)
+                    await responseStream.WriteAsync(evt);
+            }
+            await Task.Delay(100, context.CancellationToken);
+        }
+    }
 }

@@ -13,18 +13,27 @@ public partial class GodotPlayServer : Node
     private SceneTreeInspector? _inspector;
     private InputSimulator? _inputSimulator;
     private ScreenshotCapture? _screenshotCapture;
+    private TextInput? _textInput;
+    private Waiter? _waiter;
+    private EventStreamer? _eventStreamer;
 
     private readonly ConcurrentQueue<MainThreadWork> _workQueue = new();
 
     public SceneTreeInspector Inspector => _inspector!;
     public InputSimulator InputSimulator => _inputSimulator!;
     public ScreenshotCapture ScreenshotCapture => _screenshotCapture!;
+    public TextInput TextInput => _textInput!;
+    public Waiter Waiter => _waiter!;
+    public EventStreamer EventStreamer => _eventStreamer!;
 
     public override void _Ready()
     {
         _inspector = new SceneTreeInspector(GetTree());
         _inputSimulator = new InputSimulator(GetTree());
         _screenshotCapture = new ScreenshotCapture(GetTree());
+        _textInput = new TextInput(GetTree());
+        _waiter = new Waiter(GetTree());
+        _eventStreamer = new EventStreamer(GetTree());
 
         StartServer();
     }
@@ -45,6 +54,8 @@ public partial class GodotPlayServer : Node
                 work.Completed.Set();
             }
         }
+
+        _eventStreamer?.Poll();
     }
 
     /// <summary>
