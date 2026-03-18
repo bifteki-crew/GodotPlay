@@ -279,6 +279,62 @@ server.tool(
 );
 
 server.tool(
+  "godot_visual_compare",
+  "Compare current screenshot against a saved baseline. Saves new baseline if none exists. Returns similarity score.",
+  {
+    name: z.string().describe("Baseline name (e.g. 'main_menu', 'settings_screen')"),
+    threshold: z.number().default(0.95).describe("Minimum similarity to pass (0.0-1.0)"),
+  },
+  async ({ name, threshold }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+
+    const screenshot = await godotClient.takeScreenshot();
+    const imageData = Buffer.from(screenshot.pngData);
+
+    // Compute simple hash
+    const computeHash = (data: Buffer): bigint => {
+      if (data.length < 64) return 0n;
+      const step = Math.floor(data.length / 64);
+      let total = 0n;
+      for (let i = 0; i < 64; i++) total += BigInt(data[i * step]);
+      const avg = total / 64n;
+      let hash = 0n;
+      for (let i = 0; i < 64; i++) {
+        if (BigInt(data[i * step]) >= avg) hash |= (1n << BigInt(i));
+      }
+      return hash;
+    };
+
+    const currentHash = computeHash(imageData);
+
+    // Load or create baseline
+    const baselineDir = projectPath ? path.join(projectPath, ".godotplay-baselines") : ".godotplay-baselines";
+    const hashFile = path.join(baselineDir, `${name}.hash`);
+
+    if (!fs.existsSync(hashFile)) {
+      fs.mkdirSync(baselineDir, { recursive: true });
+      fs.writeFileSync(hashFile, currentHash.toString());
+      fs.writeFileSync(path.join(baselineDir, `${name}.bin`), imageData);
+      return { content: [{ type: "text" as const, text: `New baseline saved for "${name}". Take another screenshot later to compare.` }] };
+    }
+
+    const baselineHash = BigInt(fs.readFileSync(hashFile, "utf-8"));
+    const xor = currentHash ^ baselineHash;
+    let diffBits = 0;
+    let temp = xor;
+    while (temp > 0n) { diffBits += Number(temp & 1n); temp >>= 1n; }
+    const similarity = 1.0 - (diffBits / 64.0);
+
+    const passed = similarity >= threshold;
+    const text = passed
+      ? `PASS: "${name}" similarity ${(similarity * 100).toFixed(1)}% (threshold: ${(threshold * 100).toFixed(1)}%)`
+      : `FAIL: "${name}" similarity ${(similarity * 100).toFixed(1)}% (threshold: ${(threshold * 100).toFixed(1)}%) — visual regression detected!`;
+
+    return { content: [{ type: "text" as const, text }], isError: !passed };
+  }
+);
+
+server.tool(
   "godot_shutdown",
   "Shut down the running Godot instance",
   {},
