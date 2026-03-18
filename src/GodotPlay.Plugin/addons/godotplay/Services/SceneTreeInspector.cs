@@ -7,6 +7,12 @@ public class SceneTreeInspector
 {
     private readonly SceneTree _sceneTree;
 
+    // Skip internal/infrastructure nodes that bloat the tree
+    private static readonly HashSet<string> SkipNodeNames = new()
+    {
+        "GodotPlayServer", "McpBase"
+    };
+
     public SceneTreeInspector(SceneTree sceneTree)
     {
         _sceneTree = sceneTree;
@@ -17,7 +23,7 @@ public class SceneTreeInspector
         var root = _sceneTree.Root;
         return new SceneTreeResponse
         {
-            Root = SerializeNode(root),
+            Root = SerializeNode(root, maxDepth: 4),
             CurrentScenePath = _sceneTree.CurrentScene?.SceneFilePath ?? ""
         };
     }
@@ -51,10 +57,21 @@ public class SceneTreeInspector
             props.Properties["text"] = (node as Button)?.Text ?? "";
         }
 
+        if (node is Label label)
+        {
+            props.Properties["text"] = label.Text;
+        }
+
+        if (node is LineEdit lineEdit)
+        {
+            props.Properties["text"] = lineEdit.Text;
+            props.Properties["placeholder"] = lineEdit.PlaceholderText;
+        }
+
         return props;
     }
 
-    private NodeInfo SerializeNode(Node node, int depth = 0, int maxDepth = 10)
+    private NodeInfo SerializeNode(Node node, int depth = 0, int maxDepth = 4)
     {
         var info = new NodeInfo
         {
@@ -63,12 +80,31 @@ public class SceneTreeInspector
             Name = node.Name
         };
 
+        // Add key properties inline to reduce need for separate GetNodeProperties calls
+        if (node is Button btn && !string.IsNullOrEmpty(btn.Text))
+            info.Properties["text"] = btn.Text;
+        if (node is Label lbl && !string.IsNullOrEmpty(lbl.Text))
+            info.Properties["text"] = lbl.Text;
+        if (node is CanvasItem ci && !ci.Visible)
+            info.Properties["visible"] = "false";
+
         if (depth < maxDepth)
         {
             foreach (var child in node.GetChildren())
             {
+                // Skip infrastructure autoloads and internal nodes
+                if (depth == 0 && SkipNodeNames.Contains(child.Name))
+                    continue;
+
+                // Skip nodes with too many children (likely generated/data nodes)
+                // but still show them as leaf nodes
                 info.Children.Add(SerializeNode(child, depth + 1, maxDepth));
             }
+        }
+        else if (node.GetChildCount() > 0)
+        {
+            // Indicate there are more children without serializing them
+            info.Properties["_childCount"] = node.GetChildCount().ToString();
         }
 
         return info;
@@ -77,7 +113,7 @@ public class SceneTreeInspector
     private void FindNodesRecursive(Node node, NodeQuery query, NodeList result)
     {
         if (MatchesQuery(node, query))
-            result.Nodes.Add(SerializeNode(node, maxDepth: 0));
+            result.Nodes.Add(SerializeNode(node, maxDepth: 1));
 
         foreach (var child in node.GetChildren())
             FindNodesRecursive(child, query, result);
