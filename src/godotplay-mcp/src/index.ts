@@ -188,6 +188,97 @@ server.tool(
 );
 
 server.tool(
+  "godot_type",
+  "Type text into a LineEdit or TextEdit node",
+  {
+    nodePath: z.string().describe("Absolute path to the text input node"),
+    text: z.string().describe("Text to type"),
+    clearFirst: z.boolean().default(false).describe("Clear existing text before typing"),
+  },
+  async ({ nodePath, text, clearFirst }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.type(nodePath, text, clearFirst);
+    return { content: [{ type: "text" as const, text: result.success ? `Typed "${text}" into ${nodePath}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_get_property",
+  "Get all properties of a specific node (name, class, visible, size, position, text, disabled)",
+  {
+    nodePath: z.string().describe("Absolute node path"),
+  },
+  async ({ nodePath }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const props = await godotClient.getProperty(nodePath);
+    return { content: [{ type: "text" as const, text: JSON.stringify(props.properties, null, 2) }] };
+  }
+);
+
+server.tool(
+  "godot_set_property",
+  "Set a property on a node (value auto-parsed to bool/int/float/string)",
+  {
+    nodePath: z.string().describe("Absolute node path"),
+    property: z.string().describe("Property name (e.g. 'text', 'visible', 'modulate')"),
+    value: z.string().describe("Value as string"),
+  },
+  async ({ nodePath, property, value }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.setProperty(nodePath, property, value);
+    return { content: [{ type: "text" as const, text: result.success ? `Set ${property}=${value} on ${nodePath}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_load_scene",
+  "Navigate to a different scene",
+  {
+    scenePath: z.string().describe("Scene resource path (e.g. res://scenes/game.tscn)"),
+  },
+  async ({ scenePath }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.loadScene(scenePath);
+    return { content: [{ type: "text" as const, text: result.success ? `Loaded scene: ${scenePath}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_wait",
+  "Wait for a node to appear in the scene tree, or for a signal to fire",
+  {
+    nodePath: z.string().describe("Node path to wait for"),
+    signal: z.string().optional().describe("If set, wait for this signal instead of node existence"),
+    timeout: z.number().default(5000).describe("Timeout in milliseconds"),
+  },
+  async ({ nodePath, signal, timeout }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    try {
+      if (signal) {
+        const result = await godotClient.waitForSignal(nodePath, signal, timeout);
+        return { content: [{ type: "text" as const, text: `Signal "${result.signalName}" received from ${result.nodePath}` }] };
+      } else {
+        const result = await godotClient.waitForNode(nodePath, undefined, timeout);
+        return { content: [{ type: "text" as const, text: `Node found: ${result.path}` }] };
+      }
+    } catch (err: any) {
+      return { content: [{ type: "text" as const, text: `Timeout: ${err.message || err}` }], isError: true };
+    }
+  }
+);
+
+server.tool(
+  "godot_get_scene",
+  "Get info about the currently loaded scene",
+  {},
+  async () => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const info = await godotClient.getCurrentScene();
+    return { content: [{ type: "text" as const, text: JSON.stringify(info, null, 2) }] };
+  }
+);
+
+server.tool(
   "godot_shutdown",
   "Shut down the running Godot instance",
   {},

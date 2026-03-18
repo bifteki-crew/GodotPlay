@@ -54,6 +54,34 @@ export class GodotPlayClient {
     return this.callUnary("takeScreenshot", { nodePath: nodePath || "" });
   }
 
+  type(nodePath: string, text: string, clearFirst: boolean = false): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("type", { nodePath, text, clearFirst });
+  }
+
+  getProperty(nodePath: string): Promise<{ properties: Record<string, string> }> {
+    return this.callUnary("getNodeProperties", { path: nodePath });
+  }
+
+  setProperty(nodePath: string, propertyName: string, value: string): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("setProperty", { nodePath, propertyName, value });
+  }
+
+  loadScene(scenePath: string): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("loadScene", { scenePath });
+  }
+
+  getCurrentScene(): Promise<{ scenePath: string; rootNodePath: string; rootClassName: string }> {
+    return this.callUnary("getCurrentScene", {});
+  }
+
+  waitForNode(nodePath: string, className?: string, timeoutMs: number = 5000): Promise<{ path: string }> {
+    return this.callUnary("waitForNode", { nodePath, className: className || "", timeoutMs });
+  }
+
+  waitForSignal(nodePath: string, signalName: string, timeoutMs: number = 5000): Promise<{ signalName: string; nodePath: string; args: string[] }> {
+    return this.callUnary("waitForSignal", { nodePath, signalName, timeoutMs });
+  }
+
   shutdown(): Promise<void> {
     return this.callUnary("shutdown", {});
   }
