@@ -138,4 +138,39 @@ public class MockGodotPlayService : GodotPlayService.GodotPlayServiceBase
     {
         return Task.FromResult(new Empty());
     }
+
+    public override Task<ActionResult> Type(TypeRequest request, ServerCallContext context)
+    {
+        return Task.FromResult(new ActionResult { Success = true });
+    }
+
+    public override Task<ActionResult> SetProperty(SetPropertyRequest request, ServerCallContext context)
+    {
+        return Task.FromResult(new ActionResult { Success = true });
+    }
+
+    public override Task<ActionResult> LoadScene(LoadSceneRequest request, ServerCallContext context)
+    {
+        return Task.FromResult(new ActionResult { Success = true });
+    }
+
+    public override Task<SceneInfo> GetCurrentScene(Empty request, ServerCallContext context)
+    {
+        return Task.FromResult(new SceneInfo
+        {
+            ScenePath = "res://scenes/main.tscn",
+            RootNodePath = "/root/Main",
+            RootClassName = "Control"
+        });
+    }
+
+    public override Task<NodeRef> WaitForNode(WaitRequest request, ServerCallContext context)
+    {
+        return Task.FromResult(new NodeRef { Path = request.NodePath });
+    }
+
+    public override Task<SignalData> WaitForSignal(SignalWaitRequest request, ServerCallContext context)
+    {
+        return Task.FromResult(new SignalData { SignalName = request.SignalName, NodePath = request.NodePath });
+    }
 }

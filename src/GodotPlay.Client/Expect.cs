@@ -45,4 +45,23 @@ public class NodeExpectation
         throw new TimeoutException(
             $"Expected {expected} nodes matching {_locator.ToQuery()}, but found {lastCount} within {timeout ?? DefaultTimeout}.");
     }
+
+    public async Task ToHavePropertyAsync(string propertyName, string expectedValue, TimeSpan? timeout = null, CancellationToken ct = default)
+    {
+        var deadline = DateTime.UtcNow + (timeout ?? DefaultTimeout);
+        string lastValue = "";
+        while (DateTime.UtcNow < deadline)
+        {
+            ct.ThrowIfCancellationRequested();
+            var nodes = await _locator.ResolveAsync(ct);
+            if (nodes.Count > 0 && nodes[0].Properties.TryGetValue(propertyName, out var val))
+            {
+                lastValue = val;
+                if (val == expectedValue) return;
+            }
+            await Task.Delay(PollInterval, ct);
+        }
+        throw new TimeoutException(
+            $"Expected property '{propertyName}' to be '{expectedValue}', but was '{lastValue}'.");
+    }
 }

@@ -81,6 +81,30 @@ public class GodotPlaySession : IGodotPlaySession
         return await _client.TakeScreenshotAsync(new ScreenshotRequest(), cancellationToken: ct);
     }
 
+    public async Task<ActionResult> TypeAsync(TypeRequest request, CancellationToken ct = default)
+        => await _client.TypeAsync(request, cancellationToken: ct);
+
+    public async Task<ActionResult> TypeAsync(string nodePath, string text, bool clearFirst = false, CancellationToken ct = default)
+        => await _client.TypeAsync(new TypeRequest { NodePath = nodePath, Text = text, ClearFirst = clearFirst }, cancellationToken: ct);
+
+    public async Task<ActionResult> SetPropertyAsync(SetPropertyRequest request, CancellationToken ct = default)
+        => await _client.SetPropertyAsync(request, cancellationToken: ct);
+
+    public async Task<ActionResult> SetPropertyAsync(string nodePath, string propertyName, string value, CancellationToken ct = default)
+        => await _client.SetPropertyAsync(new SetPropertyRequest { NodePath = nodePath, PropertyName = propertyName, Value = value }, cancellationToken: ct);
+
+    public async Task<ActionResult> LoadSceneAsync(string scenePath, CancellationToken ct = default)
+        => await _client.LoadSceneAsync(new LoadSceneRequest { ScenePath = scenePath }, cancellationToken: ct);
+
+    public async Task<SceneInfo> GetCurrentSceneAsync(CancellationToken ct = default)
+        => await _client.GetCurrentSceneAsync(new Empty(), cancellationToken: ct);
+
+    public async Task<NodeRef> WaitForNodeAsync(string nodePath, int timeoutMs = 5000, CancellationToken ct = default)
+        => await _client.WaitForNodeAsync(new WaitRequest { NodePath = nodePath, TimeoutMs = timeoutMs }, cancellationToken: ct);
+
+    public async Task<SignalData> WaitForSignalAsync(string nodePath, string signalName, int timeoutMs = 5000, CancellationToken ct = default)
+        => await _client.WaitForSignalAsync(new SignalWaitRequest { NodePath = nodePath, SignalName = signalName, TimeoutMs = timeoutMs }, cancellationToken: ct);
+
     public async Task ShutdownAsync(CancellationToken ct = default)
     {
         await _client.ShutdownAsync(new Empty(), cancellationToken: ct);

@@ -71,4 +71,23 @@ public class NodeLocator
             throw new InvalidOperationException($"No nodes found matching query: {ToQuery()}");
         return await _session.ClickAsync(new NodeRef { Path = nodes[0].Path }, ct);
     }
+
+    public async Task<ActionResult> TypeAsync(string text, bool clearFirst = false, CancellationToken ct = default)
+    {
+        if (_session == null)
+            throw new InvalidOperationException("NodeLocator is not bound to a session.");
+
+        string path;
+        if (!string.IsNullOrEmpty(_path))
+            path = _path;
+        else
+        {
+            var nodes = await ResolveAsync(ct);
+            if (nodes.Count == 0)
+                throw new InvalidOperationException($"No nodes found matching query.");
+            path = nodes[0].Path;
+        }
+
+        return await _session.TypeAsync(new TypeRequest { NodePath = path, Text = text, ClearFirst = clearFirst }, ct);
+    }
 }
