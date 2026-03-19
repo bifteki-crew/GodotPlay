@@ -150,15 +150,25 @@ server.tool(
 
 server.tool(
   "godot_click",
-  "Click a node in the running Godot instance",
+  "Click a node in the running Godot instance. Supports left/right/middle click and double-click.",
   {
     nodePath: z.string().describe("Absolute node path"),
+    button: z.enum(["left", "right", "middle"]).default("left").describe("Mouse button"),
+    clickCount: z.number().default(1).describe("Click count (2 for double-click)"),
   },
-  async ({ nodePath }) => {
+  async ({ nodePath, button, clickCount }) => {
     if (!godotClient) {
       return { content: [{ type: "text" as const, text: "No Godot instance. Use godot_launch first." }], isError: true };
     }
-    const result = await godotClient.click(nodePath);
+    const buttonMap: Record<string, number> = { left: 1, right: 2, middle: 3 };
+    const btn = buttonMap[button] || 1;
+
+    let result;
+    if (btn === 1 && clickCount === 1) {
+      result = await godotClient.click(nodePath);
+    } else {
+      result = await godotClient.clickNode(nodePath, btn, clickCount);
+    }
     return {
       content: [{ type: "text" as const, text: result.success ? `Clicked: ${nodePath}` : `Failed: ${result.error}` }],
       isError: !result.success,
@@ -344,6 +354,223 @@ server.tool(
       godotProcess = null;
     }
     return { content: [{ type: "text" as const, text: "Godot shut down." }] };
+  }
+);
+
+server.tool(
+  "godot_mouse",
+  "Mouse input: move, click, down, up, or wheel at viewport coordinates",
+  {
+    action: z.enum(["move", "click", "down", "up", "wheel"]).describe("Mouse action type"),
+    x: z.number().describe("X position in viewport"),
+    y: z.number().describe("Y position in viewport"),
+    button: z.enum(["left", "right", "middle"]).default("left").describe("Mouse button"),
+    clickCount: z.number().default(1).describe("Click count (2 for double-click)"),
+    deltaX: z.number().default(0).describe("Horizontal scroll delta (for wheel)"),
+    deltaY: z.number().default(0).describe("Vertical scroll delta (for wheel, negative=down)"),
+  },
+  async ({ action, x, y, button, clickCount, deltaX, deltaY }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const buttonMap: Record<string, number> = { left: 1, right: 2, middle: 3 };
+    const btn = buttonMap[button] || 1;
+
+    let result;
+    switch (action) {
+      case "move":
+        result = await godotClient.mouseMove(x, y);
+        break;
+      case "click":
+        result = await godotClient.mouseClickAt(x, y, btn, clickCount);
+        break;
+      case "down":
+        result = await godotClient.mouseButtonEvent(x, y, btn, true);
+        break;
+      case "up":
+        result = await godotClient.mouseButtonEvent(x, y, btn, false);
+        break;
+      case "wheel":
+        result = await godotClient.mouseWheel(x, y, deltaX, deltaY);
+        break;
+    }
+    return { content: [{ type: "text" as const, text: result!.success ? `Mouse ${action} at (${x},${y})` : `Failed: ${result!.error}` }], isError: !result!.success };
+  }
+);
+
+server.tool(
+  "godot_key",
+  "Keyboard input: press (down+up), down, or up a key. Supports key names like 'Enter', 'Space', 'A', 'F1', and modifiers.",
+  {
+    action: z.enum(["press", "down", "up"]).default("press").describe("Key action"),
+    key: z.string().describe("Key name: 'Enter', 'Space', 'Escape', 'A'-'Z', 'F1'-'F12', 'Up', 'Down', etc."),
+    shift: z.boolean().default(false),
+    ctrl: z.boolean().default(false),
+    alt: z.boolean().default(false),
+    meta: z.boolean().default(false),
+  },
+  async ({ action, key, shift, ctrl, alt, meta }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+
+    let result;
+    switch (action) {
+      case "press":
+        result = await godotClient.keyPress(key, shift, ctrl, alt, meta);
+        break;
+      case "down":
+        result = await godotClient.keyDown(key, shift, ctrl, alt, meta);
+        break;
+      case "up":
+        result = await godotClient.keyUp(key);
+        break;
+    }
+    const modifiers = [shift && "Shift", ctrl && "Ctrl", alt && "Alt", meta && "Meta"].filter(Boolean).join("+");
+    const keyDesc = modifiers ? `${modifiers}+${key}` : key;
+    return { content: [{ type: "text" as const, text: result!.success ? `Key ${action}: ${keyDesc}` : `Failed: ${result!.error}` }], isError: !result!.success };
+  }
+);
+
+server.tool(
+  "godot_touch",
+  "Touch input: tap, down, up, or drag on screen",
+  {
+    action: z.enum(["tap", "down", "up", "drag"]).describe("Touch action"),
+    x: z.number().describe("X position"),
+    y: z.number().describe("Y position"),
+    toX: z.number().optional().describe("Drag target X (for drag action)"),
+    toY: z.number().optional().describe("Drag target Y (for drag action)"),
+    finger: z.number().default(0).describe("Finger/touch index (0-9)"),
+  },
+  async ({ action, x, y, toX, toY, finger }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+
+    let result;
+    switch (action) {
+      case "tap":
+        await godotClient.touchEvent(finger, x, y, true);
+        result = await godotClient.touchEvent(finger, x, y, false);
+        break;
+      case "down":
+        result = await godotClient.touchEvent(finger, x, y, true);
+        break;
+      case "up":
+        result = await godotClient.touchEvent(finger, x, y, false);
+        break;
+      case "drag":
+        if (toX === undefined || toY === undefined) {
+          return { content: [{ type: "text" as const, text: "toX and toY required for drag" }], isError: true };
+        }
+        result = await godotClient.touchDrag(x, y, toX, toY, finger);
+        break;
+    }
+    return { content: [{ type: "text" as const, text: result!.success ? `Touch ${action} at (${x},${y})` : `Failed: ${result!.error}` }], isError: !result!.success };
+  }
+);
+
+server.tool(
+  "godot_gesture",
+  "Gesture input: pinch (zoom) or pan at a position",
+  {
+    type: z.enum(["pinch", "pan"]).describe("Gesture type"),
+    x: z.number().describe("Center X position"),
+    y: z.number().describe("Center Y position"),
+    factor: z.number().default(1).describe("Pinch factor (>1 zoom in, <1 zoom out)"),
+    deltaX: z.number().default(0).describe("Pan horizontal delta"),
+    deltaY: z.number().default(0).describe("Pan vertical delta"),
+  },
+  async ({ type, x, y, factor, deltaX, deltaY }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.gesture(type, x, y, factor, deltaX, deltaY);
+    return { content: [{ type: "text" as const, text: result.success ? `Gesture ${type} at (${x},${y})` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_gamepad",
+  "Gamepad input: press buttons (a, b, x, y, start, dpad_up, etc.) or move axes (left_x, left_y, etc.)",
+  {
+    action: z.enum(["button", "axis"]).describe("Input type"),
+    button: z.string().optional().describe("Button name: a, b, x, y, lb, rb, start, back, dpad_up, dpad_down, dpad_left, dpad_right"),
+    pressed: z.boolean().default(true).describe("Button pressed state"),
+    axis: z.string().optional().describe("Axis name: left_x, left_y, right_x, right_y, trigger_left, trigger_right"),
+    value: z.number().default(0).describe("Axis value (-1.0 to 1.0)"),
+    device: z.number().default(0).describe("Device index"),
+  },
+  async ({ action, button, pressed, axis, value, device }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+
+    let result;
+    if (action === "button") {
+      if (!button) return { content: [{ type: "text" as const, text: "button param required for button action" }], isError: true };
+      result = await godotClient.gamepadButton(button, pressed, device);
+    } else {
+      if (!axis) return { content: [{ type: "text" as const, text: "axis param required for axis action" }], isError: true };
+      result = await godotClient.gamepadAxis(axis, value, device);
+    }
+    return { content: [{ type: "text" as const, text: result.success ? `Gamepad ${action}: ${button || axis}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_action",
+  "Trigger a Godot Input Map action (e.g. 'ui_accept', 'jump', 'move_left'). Press+release by default.",
+  {
+    action: z.string().describe("Input Map action name"),
+    pressed: z.boolean().optional().describe("If set, only press (true) or release (false). Omit for press+release."),
+    strength: z.number().default(1).describe("Action strength 0.0-1.0"),
+    durationMs: z.number().default(100).describe("Hold duration before release (ms)"),
+  },
+  async ({ action, pressed, strength, durationMs }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+
+    let result;
+    if (pressed !== undefined) {
+      result = await godotClient.actionEvent(action, pressed, strength);
+    } else {
+      result = await godotClient.actionPress(action, strength, durationMs);
+    }
+    return { content: [{ type: "text" as const, text: result.success ? `Action: ${action}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_hover",
+  "Move mouse to hover over a node (resolves node center position automatically)",
+  {
+    nodePath: z.string().describe("Absolute node path"),
+  },
+  async ({ nodePath }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.hover(nodePath);
+    return { content: [{ type: "text" as const, text: result.success ? `Hovering: ${nodePath}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_drag",
+  "Drag from one node to another (mouse down at source, move, mouse up at target)",
+  {
+    fromNodePath: z.string().describe("Source node path"),
+    toNodePath: z.string().describe("Target node path"),
+    durationMs: z.number().default(300).describe("Drag duration in ms"),
+  },
+  async ({ fromNodePath, toNodePath, durationMs }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.dragTo(fromNodePath, toNodePath, 10, durationMs);
+    return { content: [{ type: "text" as const, text: result.success ? `Dragged ${fromNodePath} → ${toNodePath}` : `Failed: ${result.error}` }], isError: !result.success };
+  }
+);
+
+server.tool(
+  "godot_scroll",
+  "Scroll at a node's position (resolves center automatically)",
+  {
+    nodePath: z.string().describe("Node path to scroll at"),
+    deltaX: z.number().default(0).describe("Horizontal scroll"),
+    deltaY: z.number().describe("Vertical scroll (positive=up, negative=down)"),
+  },
+  async ({ nodePath, deltaX, deltaY }) => {
+    if (!godotClient) return { content: [{ type: "text" as const, text: "No Godot instance." }], isError: true };
+    const result = await godotClient.scrollNode(nodePath, deltaX, deltaY);
+    return { content: [{ type: "text" as const, text: result.success ? `Scrolled at ${nodePath}` : `Failed: ${result.error}` }], isError: !result.success };
   }
 );
 

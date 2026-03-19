@@ -89,6 +89,82 @@ export class GodotPlayClient {
     return this.callUnary("shutdown", {});
   }
 
+  // --- Low-Level Input ---
+
+  mouseMove(x: number, y: number, speed: number = 0): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseMove", { x, y, speed });
+  }
+
+  mouseButtonEvent(x: number, y: number, button: number = 1, pressed: boolean = true, doubleClick: boolean = false): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseButtonEvent", { x, y, button, pressed, doubleClick });
+  }
+
+  mouseClickAt(x: number, y: number, button: number = 1, clickCount: number = 1): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseClickAt", { x, y, button, clickCount });
+  }
+
+  mouseWheel(x: number, y: number, deltaX: number = 0, deltaY: number = 0): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseWheel", { x, y, deltaX, deltaY });
+  }
+
+  keyDown(keyLabel: string, shift: boolean = false, ctrl: boolean = false, alt: boolean = false, meta: boolean = false): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("keyDown", { keyLabel, pressed: true, shift, ctrl, alt, meta });
+  }
+
+  keyUp(keyLabel: string): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("keyUp", { keyLabel, pressed: false });
+  }
+
+  keyPress(keyLabel: string, shift: boolean = false, ctrl: boolean = false, alt: boolean = false, meta: boolean = false): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("keyPress", { keyLabel, shift, ctrl, alt, meta });
+  }
+
+  touchEvent(index: number, x: number, y: number, pressed: boolean): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("touchEvent", { index, x, y, pressed });
+  }
+
+  touchDrag(fromX: number, fromY: number, toX: number, toY: number, index: number = 0, steps: number = 10, durationMs: number = 300): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("touchDrag", { index, fromX, fromY, toX, toY, steps, durationMs });
+  }
+
+  gesture(type: string, x: number, y: number, factor: number = 1, deltaX: number = 0, deltaY: number = 0): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("gesture", { type, x, y, factor, deltaX, deltaY });
+  }
+
+  gamepadButton(buttonName: string, pressed: boolean = true, device: number = 0, pressure: number = 1): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("gamepadButtonEvent", { buttonName, pressed, device, pressure });
+  }
+
+  gamepadAxis(axisName: string, value: number, device: number = 0): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("gamepadAxisEvent", { axisName, value, device });
+  }
+
+  actionEvent(action: string, pressed: boolean, strength: number = 1): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("actionEvent", { action, pressed, strength });
+  }
+
+  actionPress(action: string, strength: number = 1, durationMs: number = 100): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("actionPress", { action, strength, durationMs });
+  }
+
+  // --- High-Level Input ---
+
+  hover(nodePath: string): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("hover", { nodePath });
+  }
+
+  dragTo(fromNodePath: string, toNodePath: string, steps: number = 10, durationMs: number = 300): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("dragTo", { fromNodePath, toNodePath, steps, durationMs });
+  }
+
+  clickNode(nodePath: string, button: number = 1, clickCount: number = 1): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("clickNode", { nodePath, button, clickCount });
+  }
+
+  scrollNode(nodePath: string, deltaX: number = 0, deltaY: number = 0): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("scrollNode", { nodePath, deltaX, deltaY });
+  }
+
   close(): void {
     this.client.close();
   }
