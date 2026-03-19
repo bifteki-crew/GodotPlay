@@ -117,6 +117,141 @@ message SceneInfo {
   string root_class_name = 3;
 }
 
+// --- Low-Level Input ---
+
+message MouseMoveRequest {
+  float x = 1;
+  float y = 2;
+  float speed = 3;           // pixels per step, 0 = instant
+}
+
+message MouseButtonRequest {
+  float x = 1;
+  float y = 2;
+  int32 button = 3;          // MouseButton: 1=Left, 2=Right, 3=Middle
+  bool pressed = 4;
+  bool double_click = 5;
+  bool shift = 6;
+  bool ctrl = 7;
+  bool alt = 8;
+  bool meta = 9;
+}
+
+message MouseClickRequest {
+  float x = 1;
+  float y = 2;
+  int32 button = 3;          // default Left
+  int32 click_count = 4;     // 1=single, 2=double
+  bool shift = 5;
+  bool ctrl = 6;
+  bool alt = 7;
+  bool meta = 8;
+}
+
+message MouseWheelRequest {
+  float x = 1;
+  float y = 2;
+  float delta_x = 3;
+  float delta_y = 4;         // positive=up, negative=down
+}
+
+message KeyRequest {
+  int32 keycode = 1;
+  bool pressed = 2;
+  bool shift = 3;
+  bool ctrl = 4;
+  bool alt = 5;
+  bool meta = 6;
+  string key_label = 7;      // "Enter", "Space", "A", etc.
+}
+
+message KeyPressRequest {
+  int32 keycode = 1;
+  bool shift = 2;
+  bool ctrl = 3;
+  bool alt = 4;
+  bool meta = 5;
+  string key_label = 6;
+}
+
+message TouchRequest {
+  int32 index = 1;
+  float x = 2;
+  float y = 3;
+  bool pressed = 4;
+}
+
+message TouchDragRequest {
+  int32 index = 1;
+  float from_x = 2;
+  float from_y = 3;
+  float to_x = 4;
+  float to_y = 5;
+  int32 steps = 6;            // default 10
+  int32 duration_ms = 7;      // default 300
+}
+
+message GestureRequest {
+  string type = 1;            // "pinch" or "pan"
+  float x = 2;
+  float y = 3;
+  float factor = 4;           // pinch: magnification
+  float delta_x = 5;          // pan: horizontal
+  float delta_y = 6;          // pan: vertical
+}
+
+message GamepadButtonRequest {
+  int32 device = 1;
+  int32 button = 2;
+  bool pressed = 3;
+  float pressure = 4;         // 0.0-1.0
+  string button_name = 5;     // "a", "b", "start", etc.
+}
+
+message GamepadAxisRequest {
+  int32 device = 1;
+  int32 axis = 2;
+  float value = 3;            // -1.0 to 1.0
+  string axis_name = 4;       // "left_x", "left_y", etc.
+}
+
+message ActionRequest {
+  string action = 1;
+  bool pressed = 2;
+  float strength = 3;         // 0.0-1.0
+}
+
+message ActionPressRequest {
+  string action = 1;
+  float strength = 2;
+  int32 duration_ms = 3;      // default 100
+}
+
+// --- High-Level Input ---
+
+message DragRequest {
+  string from_node_path = 1;
+  string to_node_path = 2;
+  int32 steps = 3;
+  int32 duration_ms = 4;
+}
+
+message HoverRequest {
+  string node_path = 1;
+}
+
+message ClickNodeRequest {
+  string node_path = 1;
+  int32 button = 2;           // 1=Left, 2=Right, 3=Middle
+  int32 click_count = 3;      // 1=single, 2=double
+}
+
+message ScrollNodeRequest {
+  string node_path = 1;
+  float delta_x = 2;
+  float delta_y = 3;
+}
+
 service GodotPlayService {
   rpc Ping(Empty) returns (PingResponse);
   rpc Shutdown(Empty) returns (Empty);
@@ -140,4 +275,26 @@ service GodotPlayService {
 
   // Event streaming
   rpc SubscribeEvents(EventFilter) returns (stream GameEvent);
+
+  // Low-Level Input
+  rpc MouseMove(MouseMoveRequest) returns (ActionResult);
+  rpc MouseButtonEvent(MouseButtonRequest) returns (ActionResult);
+  rpc MouseClickAt(MouseClickRequest) returns (ActionResult);
+  rpc MouseWheel(MouseWheelRequest) returns (ActionResult);
+  rpc KeyDown(KeyRequest) returns (ActionResult);
+  rpc KeyUp(KeyRequest) returns (ActionResult);
+  rpc KeyPress(KeyPressRequest) returns (ActionResult);
+  rpc TouchEvent(TouchRequest) returns (ActionResult);
+  rpc TouchDrag(TouchDragRequest) returns (ActionResult);
+  rpc Gesture(GestureRequest) returns (ActionResult);
+  rpc GamepadButtonEvent(GamepadButtonRequest) returns (ActionResult);
+  rpc GamepadAxisEvent(GamepadAxisRequest) returns (ActionResult);
+  rpc ActionEvent(ActionRequest) returns (ActionResult);
+  rpc ActionPress(ActionPressRequest) returns (ActionResult);
+
+  // High-Level Input
+  rpc DragTo(DragRequest) returns (ActionResult);
+  rpc Hover(HoverRequest) returns (ActionResult);
+  rpc ClickNode(ClickNodeRequest) returns (ActionResult);
+  rpc ScrollNode(ScrollNodeRequest) returns (ActionResult);
 }
