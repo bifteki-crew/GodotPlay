@@ -16,7 +16,7 @@ public partial class GodotPlayServer : Node
     private TextInput? _textInput;
     private Waiter? _waiter;
     private EventStreamer? _eventStreamer;
-    private MouseInput? _mouseInput2;
+    private MouseInput? _mouse;
     private KeyboardInput? _keyboardInput;
     private TouchInput? _touchInput;
     private GamepadInput? _gamepadInput;
@@ -31,7 +31,7 @@ public partial class GodotPlayServer : Node
     public TextInput TextInput => _textInput!;
     public Waiter Waiter => _waiter!;
     public EventStreamer EventStreamer => _eventStreamer!;
-    public MouseInput MouseInput2 => _mouseInput2!;
+    public MouseInput Mouse => _mouse!;
     public KeyboardInput KeyboardInput => _keyboardInput!;
     public TouchInput TouchInput => _touchInput!;
     public GamepadInput GamepadInput => _gamepadInput!;
@@ -46,12 +46,12 @@ public partial class GodotPlayServer : Node
         _textInput = new TextInput(GetTree());
         _waiter = new Waiter(GetTree());
         _eventStreamer = new EventStreamer(GetTree());
-        _mouseInput2 = new MouseInput(GetTree());
+        _mouse = new MouseInput(GetTree());
         _keyboardInput = new KeyboardInput(GetTree());
         _touchInput = new TouchInput(GetTree());
         _gamepadInput = new GamepadInput(GetTree());
         _actionInput = new ActionInput(GetTree());
-        _highLevelInput = new HighLevelInput(GetTree(), _mouseInput2);
+        _highLevelInput = new HighLevelInput(GetTree(), _mouse);
 
         StartServer();
     }

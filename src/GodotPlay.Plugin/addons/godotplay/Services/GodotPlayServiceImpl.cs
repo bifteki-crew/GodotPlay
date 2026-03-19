@@ -104,25 +104,25 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
 
     public override Task<ActionResult> MouseMove(MouseMoveRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.MouseInput2.Move(request));
+        var result = _server.RunOnMainThread(() => _server.Mouse.Move(request));
         return Task.FromResult(result);
     }
 
     public override Task<ActionResult> MouseButtonEvent(MouseButtonRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.MouseInput2.ButtonEvent(request));
+        var result = _server.RunOnMainThread(() => _server.Mouse.ButtonEvent(request));
         return Task.FromResult(result);
     }
 
     public override Task<ActionResult> MouseClickAt(MouseClickRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.MouseInput2.ClickAt(request));
+        var result = _server.RunOnMainThread(() => _server.Mouse.ClickAt(request));
         return Task.FromResult(result);
     }
 
     public override Task<ActionResult> MouseWheel(MouseWheelRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.MouseInput2.Wheel(request));
+        var result = _server.RunOnMainThread(() => _server.Mouse.Wheel(request));
         return Task.FromResult(result);
     }
 
