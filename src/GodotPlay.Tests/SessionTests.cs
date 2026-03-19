@@ -95,7 +95,7 @@ public class MockGodotPlayService : GodotPlayService.GodotPlayServiceBase
         return Task.FromResult(new PingResponse { Version = "0.1.0", Ready = true });
     }
 
-    public override Task<SceneTreeResponse> GetSceneTree(Empty request, ServerCallContext context)
+    public override Task<SceneTreeResponse> GetSceneTree(SceneTreeRequest request, ServerCallContext context)
     {
         var root = new NodeInfo { Path = "/root", ClassName = "Window", Name = "Root" };
         root.Children.Add(new NodeInfo { Path = "/root/Main", ClassName = "Control", Name = "Main" });

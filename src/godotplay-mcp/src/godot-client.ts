@@ -31,8 +31,11 @@ export class GodotPlayClient {
     return this.callUnary("ping", {});
   }
 
-  getSceneTree(): Promise<any> {
-    return this.callUnary("getSceneTree", {});
+  getSceneTree(nodePath?: string, maxDepth?: number): Promise<any> {
+    return this.callUnary("getSceneTree", {
+      nodePath: nodePath || "",
+      maxDepth: maxDepth || 0,
+    });
   }
 
   findNodes(query: {

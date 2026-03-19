@@ -23,9 +23,9 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
         return Task.FromResult(new Empty());
     }
 
-    public override Task<SceneTreeResponse> GetSceneTree(Empty request, ServerCallContext context)
+    public override Task<SceneTreeResponse> GetSceneTree(SceneTreeRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.Inspector.GetSceneTree());
+        var result = _server.RunOnMainThread(() => _server.Inspector.GetSceneTree(request));
         return Task.FromResult(result);
     }
 

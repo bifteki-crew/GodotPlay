@@ -19,6 +19,11 @@ message NodeInfo {
   map<string, string> properties = 5;
 }
 
+message SceneTreeRequest {
+  string node_path = 1;   // Start from this node (empty = /root)
+  int32 max_depth = 2;    // Max traversal depth (0 = use default of 4)
+}
+
 message SceneTreeResponse {
   NodeInfo root = 1;
   string current_scene_path = 2;
@@ -115,7 +120,7 @@ message SceneInfo {
 service GodotPlayService {
   rpc Ping(Empty) returns (PingResponse);
   rpc Shutdown(Empty) returns (Empty);
-  rpc GetSceneTree(Empty) returns (SceneTreeResponse);
+  rpc GetSceneTree(SceneTreeRequest) returns (SceneTreeResponse);
   rpc FindNodes(NodeQuery) returns (NodeList);
   rpc GetNodeProperties(NodeRef) returns (PropertyMap);
   rpc Click(NodeRef) returns (ActionResult);

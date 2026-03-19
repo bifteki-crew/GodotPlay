@@ -59,9 +59,14 @@ public class GodotPlaySession : IGodotPlaySession
         return await _client.PingAsync(new Empty(), cancellationToken: ct);
     }
 
-    public async Task<SceneTreeResponse> GetSceneTreeAsync(CancellationToken ct = default)
+    public async Task<SceneTreeResponse> GetSceneTreeAsync(string? nodePath = null, int maxDepth = 0, CancellationToken ct = default)
     {
-        var response = await _client.GetSceneTreeAsync(new Empty(), cancellationToken: ct);
+        var request = new SceneTreeRequest
+        {
+            NodePath = nodePath ?? "",
+            MaxDepth = maxDepth
+        };
+        var response = await _client.GetSceneTreeAsync(request, cancellationToken: ct);
         _currentScenePath = response.CurrentScenePath;
         return response;
     }

@@ -135,19 +135,14 @@ server.tool(
     if (!godotClient) {
       return { content: [{ type: "text" as const, text: "No Godot instance. Use godot_launch first." }], isError: true };
     }
-    const tree = await godotClient.getSceneTree();
+    // Pass nodePath and depth to the server — filtering happens server-side
+    const tree = await godotClient.getSceneTree(nodePath, depth);
 
-    let targetNode = tree.root;
-    if (nodePath) {
-      const found = findSubtree(tree.root, nodePath);
-      if (!found) {
-        return { content: [{ type: "text" as const, text: `Node not found: ${nodePath}` }], isError: true };
-      }
-      targetNode = found;
+    if (tree.root?.properties?.error) {
+      return { content: [{ type: "text" as const, text: `Node not found: ${nodePath}` }], isError: true };
     }
 
-    const truncated = truncateTree(targetNode, depth);
-    const result: any = { currentScenePath: tree.currentScenePath, tree: truncated };
+    const result: any = { currentScenePath: tree.currentScenePath, tree: tree.root };
 
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   }
