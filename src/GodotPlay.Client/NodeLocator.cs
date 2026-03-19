@@ -74,20 +74,50 @@ public class NodeLocator
 
     public async Task<ActionResult> TypeAsync(string text, bool clearFirst = false, CancellationToken ct = default)
     {
+        var path = await ResolveFirstPathAsync(ct);
+        return await _session!.TypeAsync(new TypeRequest { NodePath = path, Text = text, ClearFirst = clearFirst }, ct);
+    }
+
+    public async Task<ActionResult> HoverAsync(CancellationToken ct = default)
+    {
+        var path = await ResolveFirstPathAsync(ct);
+        return await _session!.HoverAsync(path, ct);
+    }
+
+    public async Task<ActionResult> DoubleClickAsync(CancellationToken ct = default)
+    {
+        var path = await ResolveFirstPathAsync(ct);
+        return await _session!.ClickNodeAsync(path, button: 1, clickCount: 2, ct);
+    }
+
+    public async Task<ActionResult> RightClickAsync(CancellationToken ct = default)
+    {
+        var path = await ResolveFirstPathAsync(ct);
+        return await _session!.ClickNodeAsync(path, button: 2, clickCount: 1, ct);
+    }
+
+    public async Task<ActionResult> ScrollAsync(float deltaX = 0, float deltaY = 0, CancellationToken ct = default)
+    {
+        var path = await ResolveFirstPathAsync(ct);
+        return await _session!.ScrollNodeAsync(path, deltaX, deltaY, ct);
+    }
+
+    public async Task<ActionResult> DragToAsync(NodeLocator target, int steps = 10, int durationMs = 300, CancellationToken ct = default)
+    {
+        var sourcePath = await ResolveFirstPathAsync(ct);
+        var targetPath = await target.ResolveFirstPathAsync(ct);
+        return await _session!.DragToAsync(sourcePath, targetPath, steps, durationMs, ct);
+    }
+
+    internal async Task<string> ResolveFirstPathAsync(CancellationToken ct)
+    {
         if (_session == null)
             throw new InvalidOperationException("NodeLocator is not bound to a session.");
-
-        string path;
         if (!string.IsNullOrEmpty(_path))
-            path = _path;
-        else
-        {
-            var nodes = await ResolveAsync(ct);
-            if (nodes.Count == 0)
-                throw new InvalidOperationException($"No nodes found matching query.");
-            path = nodes[0].Path;
-        }
-
-        return await _session.TypeAsync(new TypeRequest { NodePath = path, Text = text, ClearFirst = clearFirst }, ct);
+            return _path;
+        var nodes = await ResolveAsync(ct);
+        if (nodes.Count == 0)
+            throw new InvalidOperationException("No nodes found matching query.");
+        return nodes[0].Path;
     }
 }

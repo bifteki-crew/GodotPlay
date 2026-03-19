@@ -173,4 +173,58 @@ public class MockGodotPlayService : GodotPlayService.GodotPlayServiceBase
     {
         return Task.FromResult(new SignalData { SignalName = request.SignalName, NodePath = request.NodePath });
     }
+
+    public override Task<ActionResult> MouseMove(MouseMoveRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> MouseButtonEvent(MouseButtonRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> MouseClickAt(MouseClickRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> MouseWheel(MouseWheelRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> KeyDown(KeyRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> KeyUp(KeyRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> KeyPress(KeyPressRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> TouchEvent(TouchRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> TouchDrag(TouchDragRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> Gesture(GestureRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> GamepadButtonEvent(GamepadButtonRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> GamepadAxisEvent(GamepadAxisRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> ActionEvent(ActionRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> ActionPress(ActionPressRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> DragTo(DragRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> Hover(HoverRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> ClickNode(ClickNodeRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
+
+    public override Task<ActionResult> ScrollNode(ScrollNodeRequest request, ServerCallContext context)
+        => Task.FromResult(new ActionResult { Success = true });
 }
