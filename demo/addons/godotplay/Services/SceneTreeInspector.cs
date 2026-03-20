@@ -18,12 +18,25 @@ public class SceneTreeInspector
         _sceneTree = sceneTree;
     }
 
-    public SceneTreeResponse GetSceneTree()
+    public SceneTreeResponse GetSceneTree(SceneTreeRequest request = null)
     {
-        var root = _sceneTree.Root;
+        var maxDepth = request?.MaxDepth > 0 ? request.MaxDepth : 4;
+
+        Node startNode = _sceneTree.Root;
+        if (!string.IsNullOrEmpty(request?.NodePath))
+        {
+            startNode = _sceneTree.Root.GetNodeOrNull(request.NodePath);
+            if (startNode == null)
+                return new SceneTreeResponse
+                {
+                    Root = new NodeInfo { Name = "error", Properties = { ["error"] = $"Node not found: {request.NodePath}" } },
+                    CurrentScenePath = _sceneTree.CurrentScene?.SceneFilePath ?? ""
+                };
+        }
+
         return new SceneTreeResponse
         {
-            Root = SerializeNode(root, maxDepth: 4),
+            Root = SerializeNode(startNode, maxDepth: maxDepth),
             CurrentScenePath = _sceneTree.CurrentScene?.SceneFilePath ?? ""
         };
     }

@@ -19,8 +19,7 @@ public class GamepadInput
         {
             Device = request.Device,
             ButtonIndex = button,
-            Pressed = request.Pressed,
-            Pressure = request.Pressed ? (request.Pressure > 0 ? request.Pressure : 1f) : 0f
+            Pressed = request.Pressed
         };
         Input.ParseInputEvent(ev);
         return new ActionResult { Success = true };
