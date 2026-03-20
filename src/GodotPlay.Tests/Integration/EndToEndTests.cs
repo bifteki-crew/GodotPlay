@@ -15,7 +15,7 @@ public class EndToEndTests
         _session = await GodotPlayLauncher.LaunchAsync(new LaunchOptions
         {
             ProjectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "demo")),
-            Headless = false,
+            Headless = true,
             Scene = "res://scenes/main_menu.tscn",
             Port = 50051,
             GodotPath = Environment.GetEnvironmentVariable("GODOT_PATH") ?? "godot",
