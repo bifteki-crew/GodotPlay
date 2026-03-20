@@ -23,9 +23,9 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
         return Task.FromResult(new Empty());
     }
 
-    public override Task<SceneTreeResponse> GetSceneTree(Empty request, ServerCallContext context)
+    public override Task<SceneTreeResponse> GetSceneTree(SceneTreeRequest request, ServerCallContext context)
     {
-        var result = _server.RunOnMainThread(() => _server.Inspector.GetSceneTree());
+        var result = _server.RunOnMainThread(() => _server.Inspector.GetSceneTree(request));
         return Task.FromResult(result);
     }
 
@@ -100,5 +100,113 @@ public class GodotPlayServiceImpl : GodotPlayService.GodotPlayServiceBase
             }
             await Task.Delay(100, context.CancellationToken);
         }
+    }
+
+    public override Task<ActionResult> MouseMove(MouseMoveRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.Mouse.Move(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> MouseButtonEvent(MouseButtonRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.Mouse.ButtonEvent(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> MouseClickAt(MouseClickRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.Mouse.ClickAt(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> MouseWheel(MouseWheelRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.Mouse.Wheel(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> KeyDown(KeyRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.KeyboardInput.Down(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> KeyUp(KeyRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.KeyboardInput.Up(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> KeyPress(KeyPressRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.KeyboardInput.Press(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> TouchEvent(TouchRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TouchInput.Touch(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> TouchDrag(TouchDragRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TouchInput.Drag(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> Gesture(GestureRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.TouchInput.HandleGesture(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> GamepadButtonEvent(GamepadButtonRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.GamepadInput.Button(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> GamepadAxisEvent(GamepadAxisRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.GamepadInput.Axis(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> ActionEvent(ActionRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.ActionInput.Event(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> ActionPress(ActionPressRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.ActionInput.Press(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> DragTo(DragRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.HighLevelInput.DragTo(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> Hover(HoverRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.HighLevelInput.Hover(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> ClickNode(ClickNodeRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.HighLevelInput.ClickNode(request));
+        return Task.FromResult(result);
+    }
+
+    public override Task<ActionResult> ScrollNode(ScrollNodeRequest request, ServerCallContext context)
+    {
+        var result = _server.RunOnMainThread(() => _server.HighLevelInput.ScrollNode(request));
+        return Task.FromResult(result);
     }
 }

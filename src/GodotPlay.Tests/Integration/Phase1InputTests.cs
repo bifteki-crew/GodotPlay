@@ -12,7 +12,15 @@ public class Phase1InputTests
     [OneTimeSetUp]
     public async Task Setup()
     {
-        _session = await GodotPlaySession.ConnectAsync("http://localhost:50051", TimeSpan.FromSeconds(5));
+        _session = await GodotPlayLauncher.LaunchAsync(new LaunchOptions
+        {
+            ProjectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "demo")),
+            Headless = true,
+            Scene = "res://scenes/main_menu.tscn",
+            Port = 50052,
+            GodotPath = Environment.GetEnvironmentVariable("GODOT_PATH") ?? "godot",
+            StartupTimeout = TimeSpan.FromSeconds(30)
+        });
     }
 
     [OneTimeTearDown]
@@ -165,35 +173,35 @@ public class Phase1InputTests
     [Test, Order(60)]
     public async Task Hover_NodePath_Succeeds()
     {
-        var r = await _session!.HoverAsync("/root/StartScreen/Menu");
+        var r = await _session!.HoverAsync("/root/MainMenu/VBoxContainer");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
     [Test, Order(61)]
     public async Task ClickNode_Succeeds()
     {
-        var r = await _session!.ClickNodeAsync("/root/StartScreen/Menu");
+        var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
     [Test, Order(62)]
     public async Task ClickNode_RightClick_Succeeds()
     {
-        var r = await _session!.ClickNodeAsync("/root/StartScreen/Menu", button: 2);
+        var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer", button: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
     [Test, Order(63)]
     public async Task ClickNode_DoubleClick_Succeeds()
     {
-        var r = await _session!.ClickNodeAsync("/root/StartScreen/Menu", clickCount: 2);
+        var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer", clickCount: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
     [Test, Order(64)]
     public async Task ScrollNode_Succeeds()
     {
-        var r = await _session!.ScrollNodeAsync("/root/StartScreen/Menu", deltaY: -2);
+        var r = await _session!.ScrollNodeAsync("/root/MainMenu/VBoxContainer", deltaY: -2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 

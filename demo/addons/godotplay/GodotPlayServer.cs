@@ -16,6 +16,12 @@ public partial class GodotPlayServer : Node
     private TextInput? _textInput;
     private Waiter? _waiter;
     private EventStreamer? _eventStreamer;
+    private MouseInput? _mouse;
+    private KeyboardInput? _keyboardInput;
+    private TouchInput? _touchInput;
+    private GamepadInput? _gamepadInput;
+    private ActionInput? _actionInput;
+    private HighLevelInput? _highLevelInput;
 
     private readonly ConcurrentQueue<MainThreadWork> _workQueue = new();
 
@@ -25,6 +31,12 @@ public partial class GodotPlayServer : Node
     public TextInput TextInput => _textInput!;
     public Waiter Waiter => _waiter!;
     public EventStreamer EventStreamer => _eventStreamer!;
+    public MouseInput Mouse => _mouse!;
+    public KeyboardInput KeyboardInput => _keyboardInput!;
+    public TouchInput TouchInput => _touchInput!;
+    public GamepadInput GamepadInput => _gamepadInput!;
+    public ActionInput ActionInput => _actionInput!;
+    public HighLevelInput HighLevelInput => _highLevelInput!;
 
     public override void _Ready()
     {
@@ -34,6 +46,12 @@ public partial class GodotPlayServer : Node
         _textInput = new TextInput(GetTree());
         _waiter = new Waiter(GetTree());
         _eventStreamer = new EventStreamer(GetTree());
+        _mouse = new MouseInput(GetTree());
+        _keyboardInput = new KeyboardInput(GetTree());
+        _touchInput = new TouchInput(GetTree());
+        _gamepadInput = new GamepadInput(GetTree());
+        _actionInput = new ActionInput(GetTree());
+        _highLevelInput = new HighLevelInput(GetTree(), _mouse);
 
         StartServer();
     }
