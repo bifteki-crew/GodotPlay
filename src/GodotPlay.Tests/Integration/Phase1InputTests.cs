@@ -17,7 +17,7 @@ public class Phase1InputTests
             ProjectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "demo")),
             Headless = true,
             Scene = "res://scenes/main_menu.tscn",
-            Port = 50052,
+            Port = 50051,
             GodotPath = Environment.GetEnvironmentVariable("GODOT_PATH") ?? "godot",
             StartupTimeout = TimeSpan.FromSeconds(30)
         });
