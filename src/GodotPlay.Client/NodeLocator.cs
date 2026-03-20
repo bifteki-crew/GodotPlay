@@ -102,11 +102,11 @@ public class NodeLocator
         return await _session!.ScrollNodeAsync(path, deltaX, deltaY, ct);
     }
 
-    public async Task<ActionResult> DragToAsync(NodeLocator target, int steps = 10, int durationMs = 300, CancellationToken ct = default)
+    public async Task<ActionResult> DragToAsync(NodeLocator target, int steps = 10, CancellationToken ct = default)
     {
         var sourcePath = await ResolveFirstPathAsync(ct);
         var targetPath = await target.ResolveFirstPathAsync(ct);
-        return await _session!.DragToAsync(sourcePath, targetPath, steps, durationMs, ct);
+        return await _session!.DragToAsync(sourcePath, targetPath, steps, ct);
     }
 
     internal async Task<string> ResolveFirstPathAsync(CancellationToken ct)
