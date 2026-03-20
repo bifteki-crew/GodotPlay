@@ -91,16 +91,35 @@ export class GodotPlayClient {
 
   // --- Low-Level Input ---
 
-  mouseMove(x: number, y: number, speed: number = 0): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("mouseMove", { x, y, speed });
+  mouseMove(x: number, y: number): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseMove", { x, y });
   }
 
-  mouseButtonEvent(x: number, y: number, button: number = 1, pressed: boolean = true, doubleClick: boolean = false): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("mouseButtonEvent", { x, y, button, pressed, doubleClick });
+  mouseButtonEvent(
+    x: number,
+    y: number,
+    button: number = 1,
+    pressed: boolean = true,
+    doubleClick: boolean = false,
+    shift: boolean = false,
+    ctrl: boolean = false,
+    alt: boolean = false,
+    meta: boolean = false,
+  ): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseButtonEvent", { x, y, button, pressed, doubleClick, shift, ctrl, alt, meta });
   }
 
-  mouseClickAt(x: number, y: number, button: number = 1, clickCount: number = 1): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("mouseClickAt", { x, y, button, clickCount });
+  mouseClickAt(
+    x: number,
+    y: number,
+    button: number = 1,
+    clickCount: number = 1,
+    shift: boolean = false,
+    ctrl: boolean = false,
+    alt: boolean = false,
+    meta: boolean = false,
+  ): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("mouseClickAt", { x, y, button, clickCount, shift, ctrl, alt, meta });
   }
 
   mouseWheel(x: number, y: number, deltaX: number = 0, deltaY: number = 0): Promise<{ success: boolean; error: string }> {
@@ -111,8 +130,8 @@ export class GodotPlayClient {
     return this.callUnary("keyDown", { keyLabel, pressed: true, shift, ctrl, alt, meta });
   }
 
-  keyUp(keyLabel: string): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("keyUp", { keyLabel, pressed: false });
+  keyUp(keyLabel: string, shift: boolean = false, ctrl: boolean = false, alt: boolean = false, meta: boolean = false): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("keyUp", { keyLabel, pressed: false, shift, ctrl, alt, meta });
   }
 
   keyPress(keyLabel: string, shift: boolean = false, ctrl: boolean = false, alt: boolean = false, meta: boolean = false): Promise<{ success: boolean; error: string }> {
@@ -123,8 +142,8 @@ export class GodotPlayClient {
     return this.callUnary("touchEvent", { index, x, y, pressed });
   }
 
-  touchDrag(fromX: number, fromY: number, toX: number, toY: number, index: number = 0, steps: number = 10, durationMs: number = 300): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("touchDrag", { index, fromX, fromY, toX, toY, steps, durationMs });
+  touchDrag(fromX: number, fromY: number, toX: number, toY: number, index: number = 0, steps: number = 10): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("touchDrag", { index, fromX, fromY, toX, toY, steps });
   }
 
   gesture(type: string, x: number, y: number, factor: number = 1, deltaX: number = 0, deltaY: number = 0): Promise<{ success: boolean; error: string }> {
@@ -143,8 +162,8 @@ export class GodotPlayClient {
     return this.callUnary("actionEvent", { action, pressed, strength });
   }
 
-  actionPress(action: string, strength: number = 1, durationMs: number = 100): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("actionPress", { action, strength, durationMs });
+  actionPress(action: string, strength: number = 1): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("actionPress", { action, strength });
   }
 
   // --- High-Level Input ---
@@ -153,8 +172,8 @@ export class GodotPlayClient {
     return this.callUnary("hover", { nodePath });
   }
 
-  dragTo(fromNodePath: string, toNodePath: string, steps: number = 10, durationMs: number = 300): Promise<{ success: boolean; error: string }> {
-    return this.callUnary("dragTo", { fromNodePath, toNodePath, steps, durationMs });
+  dragTo(fromNodePath: string, toNodePath: string, steps: number = 10): Promise<{ success: boolean; error: string }> {
+    return this.callUnary("dragTo", { fromNodePath, toNodePath, steps });
   }
 
   clickNode(nodePath: string, button: number = 1, clickCount: number = 1): Promise<{ success: boolean; error: string }> {

@@ -122,7 +122,6 @@ message SceneInfo {
 message MouseMoveRequest {
   float x = 1;
   float y = 2;
-  float speed = 3;           // pixels per step, 0 = instant
 }
 
 message MouseButtonRequest {
@@ -188,7 +187,6 @@ message TouchDragRequest {
   float to_x = 4;
   float to_y = 5;
   int32 steps = 6;            // default 10
-  int32 duration_ms = 7;      // default 300
 }
 
 message GestureRequest {
@@ -224,7 +222,6 @@ message ActionRequest {
 message ActionPressRequest {
   string action = 1;
   float strength = 2;
-  int32 duration_ms = 3;      // default 100
 }
 
 // --- High-Level Input ---
@@ -233,7 +230,6 @@ message DragRequest {
   string from_node_path = 1;
   string to_node_path = 2;
   int32 steps = 3;
-  int32 duration_ms = 4;
 }
 
 message HoverRequest {

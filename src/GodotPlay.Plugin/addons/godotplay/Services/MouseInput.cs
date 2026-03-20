@@ -56,7 +56,10 @@ public class MouseInput
     {
         var pos = new Vector2(request.X, request.Y);
         var button = request.Button > 0 ? (MouseButton)request.Button : MouseButton.Left;
-        var count = request.ClickCount > 0 ? request.ClickCount : 1;
+
+        var count = request.ClickCount == 0 ? 1 : request.ClickCount;
+        if (count < 1 || count > 2)
+            return new ActionResult { Success = false, Error = $"click_count must be 1 or 2, got {request.ClickCount}" };
 
         // Move mouse to position first
         Move(new MouseMoveRequest { X = request.X, Y = request.Y });
