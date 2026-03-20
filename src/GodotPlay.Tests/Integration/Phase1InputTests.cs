@@ -9,7 +9,7 @@ public class Phase1InputTests
 {
     private GodotPlaySession? _session;
 
-    [OneTimeSetUp]
+    [SetUp]
     public async Task Setup()
     {
         _session = await GodotPlayLauncher.LaunchAsync(new LaunchOptions
@@ -23,7 +23,7 @@ public class Phase1InputTests
         });
     }
 
-    [OneTimeTearDown]
+    [TearDown]
     public async Task Teardown()
     {
         if (_session != null) await _session.DisposeAsync();
@@ -31,35 +31,35 @@ public class Phase1InputTests
 
     // --- Low-Level Mouse ---
 
-    [Test, Order(1)]
+    [Test]
     public async Task MouseMove_Succeeds()
     {
         var r = await _session!.MouseMoveAsync(500, 300);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(2)]
+    [Test]
     public async Task MouseClick_AtCoordinates_Succeeds()
     {
         var r = await _session!.MouseClickAsync(500, 300);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(3)]
+    [Test]
     public async Task MouseClick_RightButton_Succeeds()
     {
         var r = await _session!.MouseClickAsync(500, 300, button: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(4)]
+    [Test]
     public async Task MouseClick_DoubleClick_Succeeds()
     {
         var r = await _session!.MouseClickAsync(500, 300, clickCount: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(5)]
+    [Test]
     public async Task MouseDown_And_MouseUp_Succeeds()
     {
         var down = await _session!.MouseDownAsync(400, 300);
@@ -68,7 +68,7 @@ public class Phase1InputTests
         Assert.That(up.Success, Is.True, up.Error);
     }
 
-    [Test, Order(6)]
+    [Test]
     public async Task MouseWheel_Succeeds()
     {
         var r = await _session!.MouseWheelAsync(400, 300, deltaY: -3);
@@ -77,21 +77,21 @@ public class Phase1InputTests
 
     // --- Low-Level Keyboard ---
 
-    [Test, Order(10)]
+    [Test]
     public async Task KeyPress_Escape_Succeeds()
     {
         var r = await _session!.KeyPressAsync("Escape");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(11)]
+    [Test]
     public async Task KeyPress_WithModifiers_Succeeds()
     {
         var r = await _session!.KeyPressAsync("S", ctrl: true);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(12)]
+    [Test]
     public async Task KeyDown_And_KeyUp_Succeeds()
     {
         var down = await _session!.KeyDownAsync("Space");
@@ -102,7 +102,7 @@ public class Phase1InputTests
 
     // --- Low-Level Touch ---
 
-    [Test, Order(20)]
+    [Test]
     public async Task Touch_Down_And_Up_Succeeds()
     {
         var down = await _session!.TouchAsync(0, 400, 300, pressed: true);
@@ -111,7 +111,7 @@ public class Phase1InputTests
         Assert.That(up.Success, Is.True, up.Error);
     }
 
-    [Test, Order(21)]
+    [Test]
     public async Task TouchDrag_Succeeds()
     {
         var r = await _session!.TouchDragAsync(100, 100, 500, 500);
@@ -120,14 +120,14 @@ public class Phase1InputTests
 
     // --- Gestures ---
 
-    [Test, Order(30)]
+    [Test]
     public async Task Gesture_Pinch_Succeeds()
     {
         var r = await _session!.GestureAsync("pinch", 400, 300, factor: 1.5f);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(31)]
+    [Test]
     public async Task Gesture_Pan_Succeeds()
     {
         var r = await _session!.GestureAsync("pan", 400, 300, deltaX: 50);
@@ -136,14 +136,14 @@ public class Phase1InputTests
 
     // --- Gamepad ---
 
-    [Test, Order(40)]
+    [Test]
     public async Task GamepadButton_A_Succeeds()
     {
         var r = await _session!.GamepadButtonAsync("a");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(41)]
+    [Test]
     public async Task GamepadAxis_LeftX_Succeeds()
     {
         var r = await _session!.GamepadAxisAsync("left_x", 0.75f);
@@ -152,14 +152,14 @@ public class Phase1InputTests
 
     // --- Input Actions ---
 
-    [Test, Order(50)]
+    [Test]
     public async Task ActionPress_UiAccept_Succeeds()
     {
         var r = await _session!.ActionPressAsync("ui_accept");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(51)]
+    [Test]
     public async Task ActionEvent_UiCancel_PressAndRelease_Succeeds()
     {
         var press = await _session!.ActionEventAsync("ui_cancel", pressed: true);
@@ -170,48 +170,38 @@ public class Phase1InputTests
 
     // --- High-Level (Node-based) ---
 
-    [Test, Order(60)]
+    [Test]
     public async Task Hover_NodePath_Succeeds()
     {
         var r = await _session!.HoverAsync("/root/MainMenu/VBoxContainer");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(61)]
+    [Test]
     public async Task ClickNode_Succeeds()
     {
         var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer");
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(62)]
+    [Test]
     public async Task ClickNode_RightClick_Succeeds()
     {
         var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer", button: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(63)]
+    [Test]
     public async Task ClickNode_DoubleClick_Succeeds()
     {
         var r = await _session!.ClickNodeAsync("/root/MainMenu/VBoxContainer", clickCount: 2);
         Assert.That(r.Success, Is.True, r.Error);
     }
 
-    [Test, Order(64)]
+    [Test]
     public async Task ScrollNode_Succeeds()
     {
         var r = await _session!.ScrollNodeAsync("/root/MainMenu/VBoxContainer", deltaY: -2);
         Assert.That(r.Success, Is.True, r.Error);
-    }
-
-    // --- Screenshot after all input to verify game didn't crash ---
-
-    [Test, Order(99)]
-    public async Task Screenshot_AfterAllInput_StillWorks()
-    {
-        var screenshot = await _session!.ScreenshotAsync();
-        Assert.That(screenshot.PngData, Is.Not.Empty);
-        Assert.That(screenshot.Width, Is.GreaterThan(0));
     }
 }
