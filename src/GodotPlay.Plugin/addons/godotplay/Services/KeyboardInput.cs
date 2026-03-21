@@ -14,31 +14,52 @@ public class KeyboardInput
 
     public ActionResult Down(KeyRequest request)
     {
-        var key = ResolveKey(request.Keycode, request.KeyLabel);
-        var ev = CreateKeyEvent(key, true, request.Shift, request.Ctrl, request.Alt, request.Meta);
-        Input.ParseInputEvent(ev);
-        return new ActionResult { Success = true };
+        try
+        {
+            var key = ResolveKey(request.Keycode, request.KeyLabel);
+            var ev = CreateKeyEvent(key, true, request.Shift, request.Ctrl, request.Alt, request.Meta);
+            Input.ParseInputEvent(ev);
+            return new ActionResult { Success = true };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ActionResult { Success = false, Error = ex.Message };
+        }
     }
 
     public ActionResult Up(KeyRequest request)
     {
-        var key = ResolveKey(request.Keycode, request.KeyLabel);
-        var ev = CreateKeyEvent(key, false, request.Shift, request.Ctrl, request.Alt, request.Meta);
-        Input.ParseInputEvent(ev);
-        return new ActionResult { Success = true };
+        try
+        {
+            var key = ResolveKey(request.Keycode, request.KeyLabel);
+            var ev = CreateKeyEvent(key, false, request.Shift, request.Ctrl, request.Alt, request.Meta);
+            Input.ParseInputEvent(ev);
+            return new ActionResult { Success = true };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ActionResult { Success = false, Error = ex.Message };
+        }
     }
 
     public ActionResult Press(KeyPressRequest request)
     {
-        var key = ResolveKey(request.Keycode, request.KeyLabel);
+        try
+        {
+            var key = ResolveKey(request.Keycode, request.KeyLabel);
 
-        var down = CreateKeyEvent(key, true, request.Shift, request.Ctrl, request.Alt, request.Meta);
-        Input.ParseInputEvent(down);
+            var down = CreateKeyEvent(key, true, request.Shift, request.Ctrl, request.Alt, request.Meta);
+            Input.ParseInputEvent(down);
 
-        var up = CreateKeyEvent(key, false, request.Shift, request.Ctrl, request.Alt, request.Meta);
-        Input.ParseInputEvent(up);
+            var up = CreateKeyEvent(key, false, request.Shift, request.Ctrl, request.Alt, request.Meta);
+            Input.ParseInputEvent(up);
 
-        return new ActionResult { Success = true };
+            return new ActionResult { Success = true };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ActionResult { Success = false, Error = ex.Message };
+        }
     }
 
     private static InputEventKey CreateKeyEvent(Key key, bool pressed, bool shift, bool ctrl, bool alt, bool meta)

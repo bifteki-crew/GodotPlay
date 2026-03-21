@@ -21,7 +21,9 @@ public class ActionInput
         {
             Action = request.Action,
             Pressed = request.Pressed,
-            Strength = request.Strength > 0 ? request.Strength : 1f
+            Strength = request.Pressed
+                ? (request.Strength > 0 ? request.Strength : 1f)
+                : 0f
         };
         Input.ParseInputEvent(ev);
         return new ActionResult { Success = true };

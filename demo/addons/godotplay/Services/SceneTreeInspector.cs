@@ -18,7 +18,7 @@ public class SceneTreeInspector
         _sceneTree = sceneTree;
     }
 
-    public SceneTreeResponse GetSceneTree(SceneTreeRequest request = null)
+    public SceneTreeResponse GetSceneTree(SceneTreeRequest? request = null)
     {
         var maxDepth = request?.MaxDepth > 0 ? request.MaxDepth : 4;
 

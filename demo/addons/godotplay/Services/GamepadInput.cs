@@ -14,28 +14,42 @@ public class GamepadInput
 
     public ActionResult Button(GamepadButtonRequest request)
     {
-        var button = ResolveButton(request.Button, request.ButtonName);
-        var ev = new InputEventJoypadButton
+        try
         {
-            Device = request.Device,
-            ButtonIndex = button,
-            Pressed = request.Pressed
-        };
-        Input.ParseInputEvent(ev);
-        return new ActionResult { Success = true };
+            var button = ResolveButton(request.Button, request.ButtonName);
+            var ev = new InputEventJoypadButton
+            {
+                Device = request.Device,
+                ButtonIndex = button,
+                Pressed = request.Pressed
+            };
+            Input.ParseInputEvent(ev);
+            return new ActionResult { Success = true };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ActionResult { Success = false, Error = ex.Message };
+        }
     }
 
     public ActionResult Axis(GamepadAxisRequest request)
     {
-        var axis = ResolveAxis(request.Axis, request.AxisName);
-        var ev = new InputEventJoypadMotion
+        try
         {
-            Device = request.Device,
-            Axis = axis,
-            AxisValue = request.Value
-        };
-        Input.ParseInputEvent(ev);
-        return new ActionResult { Success = true };
+            var axis = ResolveAxis(request.Axis, request.AxisName);
+            var ev = new InputEventJoypadMotion
+            {
+                Device = request.Device,
+                Axis = axis,
+                AxisValue = request.Value
+            };
+            Input.ParseInputEvent(ev);
+            return new ActionResult { Success = true };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ActionResult { Success = false, Error = ex.Message };
+        }
     }
 
     private static JoyButton ResolveButton(int button, string buttonName)
