@@ -32,6 +32,11 @@ public class InputSimulator
                 Pressed = true,
                 Position = control.Size / 2
             };
+            // Emit signal first — needed for nodes using gui_input.connect()
+            // (e.g. tab bars, menu items, star nodes on galaxy maps).
+            // Then call virtual method — needed for nodes overriding _gui_input()
+            // (e.g. modal overlays, custom input handlers).
+            control.EmitSignal(Control.SignalName.GuiInput, click);
             control._GuiInput(click);
 
             var release = new InputEventMouseButton
@@ -40,6 +45,7 @@ public class InputSimulator
                 Pressed = false,
                 Position = control.Size / 2
             };
+            control.EmitSignal(Control.SignalName.GuiInput, release);
             control._GuiInput(release);
 
             return new ActionResult { Success = true };

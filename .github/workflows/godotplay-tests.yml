@@ -17,10 +17,10 @@ jobs:
           dotnet-version: "8.0"
 
       - name: Restore
-        run: dotnet restore GodotPlay.sln
+        run: dotnet restore src/GodotPlay.Tests
 
       - name: Build
-        run: dotnet build GodotPlay.sln --no-restore
+        run: dotnet build src/GodotPlay.Tests --no-restore
 
       - name: Unit Tests
         run: dotnet test src/GodotPlay.Tests --filter "Category!=Integration" --no-build -v normal

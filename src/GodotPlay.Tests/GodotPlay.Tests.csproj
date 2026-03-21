@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -32,7 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../proto/godotplay.proto" GrpcServices="Server" Link="Protos/godotplay.proto" />
+    <!-- CS0436: suppress conflict between protobuf types generated in this project and in GodotPlay.Client.
+         Both projects compile godotplay.proto; the GodotPlay.Tests project includes it directly for the gRPC server stub. -->
+    <Protobuf Include="../../proto/godotplay.proto" GrpcServices="Server" Link="Protos/godotplay.proto">
+      <NoWarn>CS0436</NoWarn>
+    </Protobuf>
   </ItemGroup>
 
 </Project>
