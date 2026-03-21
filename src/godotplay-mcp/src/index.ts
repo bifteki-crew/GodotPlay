@@ -395,8 +395,10 @@ server.tool(
       case "wheel":
         result = await godotClient.mouseWheel(x, y, deltaX, deltaY);
         break;
+      default:
+        return { content: [{ type: "text" as const, text: `Unknown mouse action: ${action}` }], isError: true };
     }
-    return { content: [{ type: "text" as const, text: result!.success ? `Mouse ${action} at (${x},${y})` : `Failed: ${result!.error}` }], isError: !result!.success };
+    return { content: [{ type: "text" as const, text: result.success ? `Mouse ${action} at (${x},${y})` : `Failed: ${result.error}` }], isError: !result.success };
   }
 );
 
@@ -425,10 +427,12 @@ server.tool(
       case "up":
         result = await godotClient.keyUp(key, shift, ctrl, alt, meta);
         break;
+      default:
+        return { content: [{ type: "text" as const, text: `Unknown key action: ${action}` }], isError: true };
     }
     const modifiers = [shift && "Shift", ctrl && "Ctrl", alt && "Alt", meta && "Meta"].filter(Boolean).join("+");
     const keyDesc = modifiers ? `${modifiers}+${key}` : key;
-    return { content: [{ type: "text" as const, text: result!.success ? `Key ${action}: ${keyDesc}` : `Failed: ${result!.error}` }], isError: !result!.success };
+    return { content: [{ type: "text" as const, text: result.success ? `Key ${action}: ${keyDesc}` : `Failed: ${result.error}` }], isError: !result.success };
   }
 );
 
@@ -469,8 +473,10 @@ server.tool(
         }
         result = await godotClient.touchDrag(x, y, toX, toY, finger);
         break;
+      default:
+        return { content: [{ type: "text" as const, text: `Unknown touch action: ${action}` }], isError: true };
     }
-    return { content: [{ type: "text" as const, text: result!.success ? `Touch ${action} at (${x},${y})` : `Failed: ${result!.error}` }], isError: !result!.success };
+    return { content: [{ type: "text" as const, text: result.success ? `Touch ${action} at (${x},${y})` : `Failed: ${result.error}` }], isError: !result.success };
   }
 );
 

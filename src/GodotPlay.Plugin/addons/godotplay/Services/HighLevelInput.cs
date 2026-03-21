@@ -109,7 +109,7 @@ public class HighLevelInput
 
         if (node is Node3D node3d)
         {
-            var camera = _sceneTree.Root.GetCamera3D();
+            var camera = _sceneTree.Root.GetViewport().GetCamera3D();
             if (camera != null && !camera.IsPositionBehind(node3d.GlobalPosition))
             {
                 center = camera.UnprojectPosition(node3d.GlobalPosition);
