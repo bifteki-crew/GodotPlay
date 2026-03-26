@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <GodotPlayVersion>0.2.0</GodotPlayVersion>
+    <GodotPlayAddonSource>$(MSBuildThisFileDirectory)../tools/addons/godotplay/</GodotPlayAddonSource>
+    <GodotPlayAddonDest>$(ProjectDir)addons/godotplay/</GodotPlayAddonDest>
+    <GodotPlayAutoRegister Condition="'$(GodotPlayAutoRegister)' == ''">true</GodotPlayAutoRegister>
+  </PropertyGroup>
+
+  <Target Name="GodotPlayCopyAddon" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <GodotPlayAddonFiles Include="$(GodotPlayAddonSource)**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(GodotPlayAddonFiles)"
+          DestinationFiles="@(GodotPlayAddonFiles->'$(GodotPlayAddonDest)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Message Text="GodotPlay: Copied addon files to $(GodotPlayAddonDest)" Importance="normal" />
+  </Target>
+
+  <Target Name="GodotPlayRegisterAutoload" AfterTargets="GodotPlayCopyAddon"
+          Condition="'$(GodotPlayAutoRegister)' == 'true' AND Exists('$(ProjectDir)project.godot')">
+    <PropertyGroup>
+      <_GodotPlayProjectFile>$(ProjectDir)project.godot</_GodotPlayProjectFile>
+      <_GodotPlayAutoloadLine>GodotPlayServer="*res://addons/godotplay/GodotPlayServer.cs"</_GodotPlayAutoloadLine>
+    </PropertyGroup>
+    <GodotPlayRegisterAutoloadTask ProjectFile="$(_GodotPlayProjectFile)"
+                                     AutoloadLine="$(_GodotPlayAutoloadLine)" />
+  </Target>
+
+  <UsingTask TaskName="GodotPlayRegisterAutoloadTask" TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ProjectFile ParameterType="System.String" Required="true" />
+      <AutoloadLine ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var lines = System.IO.File.ReadAllLines(ProjectFile).ToList();
+
+        // Already registered?
+        if (lines.Any(l => l.Contains("GodotPlayServer")))
+        {
+            Log.LogMessage(MessageImportance.Normal, "GodotPlay: Autoload already registered");
+            return true;
+        }
+
+        // Find [autoload] section
+        int autoloadIdx = lines.FindIndex(l => l.Trim() == "[autoload]");
+        if (autoloadIdx >= 0)
+        {
+            // Insert after [autoload] header (skip any blank lines)
+            int insertIdx = autoloadIdx + 1;
+            while (insertIdx < lines.Count && string.IsNullOrWhiteSpace(lines[insertIdx]))
+                insertIdx++;
+            lines.Insert(insertIdx, AutoloadLine);
+        }
+        else
+        {
+            // Add [autoload] section at end
+            lines.Add("");
+            lines.Add("[autoload]");
+            lines.Add("");
+            lines.Add(AutoloadLine);
+        }
+
+        System.IO.File.WriteAllLines(ProjectFile, lines);
+        Log.LogMessage(MessageImportance.Normal, "GodotPlay: Registered autoload in " + ProjectFile);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+</Project>
