@@ -1,3 +1,5 @@
+// NOTE: This file is synced from the canonical ../../proto/godotplay.proto at build time.
+// Do not edit here directly — edit the root proto file instead.
 syntax = "proto3";
 
 package godotplay;

@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"process.exit(0)\" || echo 'GodotPlay requires Node.js. Install from https://nodejs.org'"
+            "command": "node -e \"process.exit(0)\""
           }
         ]
       }

@@ -36,7 +36,7 @@
           PackagePath="build/"
           Pack="true" />
     <None Include="../../README.md"
-          PackagePath="/"
+          PackagePath=""
           Pack="true" />
   </ItemGroup>
 

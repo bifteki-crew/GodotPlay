@@ -38,10 +38,22 @@
       <Code Type="Fragment" Language="cs"><![CDATA[
         var lines = System.IO.File.ReadAllLines(ProjectFile).ToList();
 
-        // Already registered?
-        if (lines.Any(l => l.Contains("GodotPlayServer")))
+        // Already registered? Look for exact autoload key for GodotPlayServer.
+        var autoloadKey = "GodotPlayServer=";
+        var existingIdx = lines.FindIndex(l => l.TrimStart().StartsWith(autoloadKey, System.StringComparison.Ordinal));
+        if (existingIdx >= 0)
         {
-            Log.LogMessage(MessageImportance.Normal, "GodotPlay: Autoload already registered");
+            // If the existing line differs from the expected autoload line, update it.
+            if (!string.Equals(lines[existingIdx].Trim(), AutoloadLine.Trim(), System.StringComparison.Ordinal))
+            {
+                lines[existingIdx] = AutoloadLine;
+                System.IO.File.WriteAllLines(ProjectFile, lines);
+                Log.LogMessage(MessageImportance.Normal, "GodotPlay: Updated existing autoload entry in " + ProjectFile);
+            }
+            else
+            {
+                Log.LogMessage(MessageImportance.Normal, "GodotPlay: Autoload already registered");
+            }
             return true;
         }
 
