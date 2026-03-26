@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PROTO_PATH = path.resolve(__dirname, "../../../proto/godotplay.proto");
+const PROTO_PATH = path.resolve(__dirname, "../proto/godotplay.proto");
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: false,
