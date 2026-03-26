@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- Suppress CS0436: proto types generated here conflict with same types in GodotPlay.Client -->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,11 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- CS0436: suppress conflict between protobuf types generated in this project and in GodotPlay.Client.
-         Both projects compile godotplay.proto; the GodotPlay.Tests project includes it directly for the gRPC server stub. -->
-    <Protobuf Include="../../proto/godotplay.proto" GrpcServices="Server" Link="Protos/godotplay.proto">
-      <NoWarn>CS0436</NoWarn>
-    </Protobuf>
+    <!-- Both this project and GodotPlay.Client compile godotplay.proto;
+         this project needs Server stubs, Client provides Client stubs.
+         CS0436 suppressed in PropertyGroup above. -->
+    <Protobuf Include="../../proto/godotplay.proto" GrpcServices="Server" Link="Protos/godotplay.proto" />
   </ItemGroup>
 
 </Project>
