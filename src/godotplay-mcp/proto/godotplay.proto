@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package godotplay;
+
+option csharp_namespace = "GodotPlay.Protocol";
+
+message Empty {}
+
+message PingResponse {
+  string version = 1;
+  bool ready = 2;
+}
+
+message NodeInfo {
+  string path = 1;
+  string class_name = 2;
+  string name = 3;
+  repeated NodeInfo children = 4;
+  map<string, string> properties = 5;
+}
+
+message SceneTreeRequest {
+  string node_path = 1;   // Start from this node (empty = /root)
+  int32 max_depth = 2;    // Max traversal depth (0 = use default of 4)
+}
+
+message SceneTreeResponse {
+  NodeInfo root = 1;
+  string current_scene_path = 2;
+}
+
+message NodeQuery {
+  string path = 1;
+  string class_name = 2;
+  string name_pattern = 3;
+  string group = 4;
+  map<string, string> property_filters = 5;
+}
+
+message NodeList {
+  repeated NodeInfo nodes = 1;
+}
+
+message NodeRef {
+  string path = 1;
+}
+
+message PropertyMap {
+  map<string, string> properties = 1;
+}
+
+message ActionResult {
+  bool success = 1;
+  string error = 2;
+}
+
+message ScreenshotRequest {
+  string node_path = 1;
+}
+
+message ScreenshotResponse {
+  bytes png_data = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+message TypeRequest {
+  string node_path = 1;
+  string text = 2;
+  bool clear_first = 3;
+}
+
+message SetPropertyRequest {
+  string node_path = 1;
+  string property_name = 2;
+  string value = 3;
+}
+
+message WaitRequest {
+  string node_path = 1;
+  string class_name = 2;
+  int32 timeout_ms = 3;
+}
+
+message SignalWaitRequest {
+  string node_path = 1;
+  string signal_name = 2;
+  int32 timeout_ms = 3;
+}
+
+message SignalData {
+  string signal_name = 1;
+  string node_path = 2;
+  repeated string args = 3;
+}
+
+message EventFilter {
+  bool scene_changes = 1;
+  bool signals = 2;
+  bool errors = 3;
+  repeated string watch_signals = 4;
+}
+
+message GameEvent {
+  string type = 1;
+  string detail = 2;
+  int64 timestamp_ms = 3;
+}
+
+message LoadSceneRequest {
+  string scene_path = 1;
+}
+
+message SceneInfo {
+  string scene_path = 1;
+  string root_node_path = 2;
+  string root_class_name = 3;
+}
+
+service GodotPlayService {
+  rpc Ping(Empty) returns (PingResponse);
+  rpc Shutdown(Empty) returns (Empty);
+  rpc GetSceneTree(SceneTreeRequest) returns (SceneTreeResponse);
+  rpc FindNodes(NodeQuery) returns (NodeList);
+  rpc GetNodeProperties(NodeRef) returns (PropertyMap);
+  rpc Click(NodeRef) returns (ActionResult);
+  rpc TakeScreenshot(ScreenshotRequest) returns (ScreenshotResponse);
+
+  // Interactions
+  rpc Type(TypeRequest) returns (ActionResult);
+  rpc SetProperty(SetPropertyRequest) returns (ActionResult);
+
+  // Navigation
+  rpc LoadScene(LoadSceneRequest) returns (ActionResult);
+  rpc GetCurrentScene(Empty) returns (SceneInfo);
+
+  // Waiting
+  rpc WaitForNode(WaitRequest) returns (NodeRef);
+  rpc WaitForSignal(SignalWaitRequest) returns (SignalData);
+
+  // Event streaming
+  rpc SubscribeEvents(EventFilter) returns (stream GameEvent);
+}

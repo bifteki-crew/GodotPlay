@@ -14,7 +14,7 @@
   "keywords": ["godot", "testing", "mcp", "automation", "game-testing"],
   "author": "GodotPlay",
   "license": "MIT",
-  "files": ["dist/", "README.md"],
+  "files": ["dist/", "proto/", "README.md"],
   "publishConfig": { "access": "public" },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.3",
