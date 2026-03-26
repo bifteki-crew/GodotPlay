@@ -2,9 +2,14 @@
 
 Claude Code plugin for [GodotPlay](../README.md), a Playwright-like test automation framework for Godot 4.x.
 
-## Skills
+## Skills (MCP Prompts)
 
-- `/godotplay:explore` — Launch and interactively explore a Godot project via MCP
+Skills are delivered as MCP prompts via the `godotplay-mcp` server:
+
+- `godot_explore` — Launch and interactively explore a Godot project
+- `godot_test` — Write and run tests for a Godot project
+- `godot_debug` — Debug a failing Godot scene or script
+- `godot_coverage` — Analyze test coverage for a Godot project
 
 ## Setup
 
@@ -15,8 +20,8 @@ Add to your Claude Code MCP settings (via `/mcp`):
 ```json
 {
   "godotplay": {
-    "command": "node",
-    "args": ["D:/ai/playgodot/src/godotplay-mcp/dist/index.js"]
+    "command": "npx",
+    "args": ["-y", "godotplay-mcp"]
   }
 }
 ```
@@ -31,10 +36,4 @@ Set the `GODOT_PATH` environment variable to your Godot executable, or ensure `g
 
 ## Usage
 
-In Claude Code, invoke the explore skill:
-
-```
-/godotplay:explore
-```
-
-Or ask Claude to explore your Godot project — the skill triggers automatically when relevant.
+Skills are available as MCP prompts. Ask Claude to explore, test, debug, or analyze coverage of your Godot project and the relevant prompt will be used automatically.
