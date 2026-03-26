@@ -8,8 +8,9 @@
     "godotplay-mcp": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "node scripts/embed-skills.js && tsc",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
   "keywords": ["godot", "testing", "mcp", "automation", "game-testing"],
   "author": "GodotPlay",

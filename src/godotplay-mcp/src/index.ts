@@ -7,6 +7,7 @@ import { GodotPlayClient } from "./godot-client.js";
 import { exec, type ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
+import { registerPrompts } from "./prompts.js";
 
 let godotClient: GodotPlayClient | null = null;
 let godotProcess: ChildProcess | null = null;
@@ -449,6 +450,9 @@ server.resource(
     };
   }
 );
+
+// --- Prompts (skills) ---
+registerPrompts(server);
 
 // --- Start ---
 
