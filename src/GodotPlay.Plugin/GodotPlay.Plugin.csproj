@@ -4,15 +4,45 @@
     <RootNamespace>GodotPlay.Plugin</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet package metadata -->
+    <PackageId>GodotPlay.Plugin</PackageId>
+    <Version>0.2.0</Version>
+    <Description>Playwright-like test automation addon for Godot 4.x — auto-installs gRPC server plugin</Description>
+    <Authors>GodotPlay</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>godot;testing;automation;grpc;game-testing</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- Content-only package: addon files go in tools/, no compiled DLL -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <!-- Do NOT compile addon .cs files — they reference Godot types unavailable here -->
+  <ItemGroup>
+    <Compile Remove="addons/**" />
+  </ItemGroup>
+
+  <!-- Pack addon files under tools/ for physical copy by .targets -->
+  <ItemGroup>
+    <None Include="addons/godotplay/**/*"
+          PackagePath="tools/addons/godotplay/"
+          Pack="true" />
+    <None Include="build/GodotPlay.Plugin.props"
+          PackagePath="build/"
+          Pack="true" />
+    <None Include="build/GodotPlay.Plugin.targets"
+          PackagePath="build/"
+          Pack="true" />
+    <None Include="../../README.md"
+          PackagePath="/"
+          Pack="true" />
+  </ItemGroup>
+
+  <!-- Transitive dependencies for consumers -->
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="2.46.6" />
     <PackageReference Include="Google.Protobuf" Version="3.28.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.66.0" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="../../proto/godotplay.proto" GrpcServices="Server" Link="Protos/godotplay.proto" />
   </ItemGroup>
 </Project>
