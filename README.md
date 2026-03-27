@@ -10,10 +10,14 @@ Playwright-like test automation framework for Godot 4.x.
 
 ## Quick Start
 
-### 1. Add plugin to your Godot project
+### 1. Add plugin to your Godot C# project
 
-Copy `src/GodotPlay.Plugin/addons/godotplay/` into your project's `addons/` folder.
-Enable the plugin in Project > Project Settings > Plugins.
+```bash
+dotnet add package GodotPlay.Plugin
+dotnet build
+```
+
+This auto-copies the addon, registers the autoload, and pulls in dependencies.
 
 ### 2. Write a test
 
@@ -32,13 +36,13 @@ await session.DisposeAsync();
 
 ### 3. Use with AI agents (MCP)
 
-Add to your Claude Code MCP config:
+Add to your `.mcp.json` or Claude Code MCP settings:
 ```json
 {
   "mcpServers": {
     "godotplay": {
-      "command": "node",
-      "args": ["path/to/godotplay-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["godotplay-mcp"]
     }
   }
 }
