@@ -4,7 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { GodotPlayClient } from "./godot-client.js";
-import { exec, type ChildProcess } from "child_process";
+import { exec, execFile, type ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
 import { registerPrompts } from "./prompts.js";
@@ -96,7 +96,7 @@ server.tool(
     if (params.headless) args.push("--headless");
     if (params.scene) args.push(params.scene);
 
-    godotProcess = exec(`${params.godotPath} ${args.join(" ")}`);
+    godotProcess = execFile(params.godotPath, args);
 
     godotClient = new GodotPlayClient(`localhost:${params.port}`);
     const maxRetries = 30;
